@@ -20,12 +20,21 @@
 namespace vktg
 {
 
+    /***        CONFIG         ***/
 
+    #define WINDOW_WIDTH 1920
+    #define WINDOW_HEIGHT 1080
+    #define WINDOW_TITLE "Main"
+
+    /***      CONFIG END       ***/
+
+
+    GLFWwindow* Window();
     vk::Instance Instance();
     vk::DebugUtilsMessengerEXT DebugMessenger();
 
 
-    void StartUp( uint32_t windowWidth, uint32_t windowHeight, std::string windowTitle);
+    void StartUp();
 
 
 } // namespace vktg

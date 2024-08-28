@@ -26,6 +26,41 @@ namespace vktg
     }
 
 
+    GLFWwindow *Window() {
+
+        static GLFWwindow* window;
+
+        if (!window)
+        {
+            // init glfw
+            if (!glfwInit())
+            {
+                std::cerr << "Failed to init glfw.";
+            }
+
+            // configure GLFW window
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // for vulkan
+            
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+            glfwWindowHint(GLFW_RED_BITS, 8);
+            glfwWindowHint(GLFW_GREEN_BITS, 8);
+            glfwWindowHint(GLFW_BLUE_BITS, 8);
+            glfwWindowHint(GLFW_ALPHA_BITS, 8);
+            glfwWindowHint(GLFW_DEPTH_BITS, 24);
+
+            // create window
+            window = glfwCreateWindow( WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr);
+
+            // additional window configs
+            // glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+
+        return window;
+    }
+
 
     vk::Instance Instance() {
 
@@ -96,7 +131,7 @@ namespace vktg
     }
 
 
-    void StartUp(uint32_t windowWidth, uint32_t windowHeight, std::string windowTitle) {
+    void StartUp() {
 
         Instance();
 #ifndef NDEBUG

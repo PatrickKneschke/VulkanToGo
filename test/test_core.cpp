@@ -6,8 +6,9 @@
 
 TEST_CASE("startup core", "[core]") {
 
-    vktg::StartUp( 1920, 1080, "Title");
-    
+    vktg::StartUp();
+
+    REQUIRE_FALSE( !vktg::Window());
     REQUIRE_FALSE( !vktg::Instance());
     REQUIRE_FALSE( !vktg::DebugMessenger());
 }
