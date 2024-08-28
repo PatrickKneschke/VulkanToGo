@@ -146,6 +146,38 @@ namespace vktg
     }
 
 
+    vk::PhysicalDevice Gpu() {
+
+        static vk::PhysicalDevice chosenGpu;
+
+        if (!chosenGpu)
+        {
+            auto gpus = Instance().enumeratePhysicalDevices();
+            for (auto &gpu : gpus) 
+            {	
+                auto properties = gpu.getProperties();
+
+                if (properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu)
+                {
+                    chosenGpu = gpu;
+                    break;
+                }
+                else if ( properties.deviceType == vk::PhysicalDeviceType::eIntegratedGpu)
+                {
+                    chosenGpu = gpu;
+                }
+            }
+
+            if( !chosenGpu)
+            {
+                throw std::runtime_error("Failed to find suitable GPU!");
+            }
+        }
+
+        return chosenGpu;
+    }
+
+
     void StartUp() {
 
         Window();
@@ -154,6 +186,26 @@ namespace vktg
         DebugMessenger();
 #endif
         Surface();
+        Gpu();
+    }
+
+
+    void ShutDown() {
+
+        // surface
+        Instance().destroySurfaceKHR( Surface());
+
+        // debug messenger
+#ifndef NDEBUG
+        Instance().destroyDebugUtilsMessengerEXT( DebugMessenger());
+#endif
+
+        // instance
+        Instance().destroy();
+
+        // window
+        glfwDestroyWindow( Window());
+        glfwTerminate();
     }
 
 

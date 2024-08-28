@@ -33,9 +33,11 @@ namespace vktg
     vk::Instance Instance();
     vk::DebugUtilsMessengerEXT DebugMessenger();
     vk::SurfaceKHR Surface();
+    vk::PhysicalDevice Gpu();
 
 
     void StartUp();
+    void ShutDown();
 
 
 } // namespace vktg
