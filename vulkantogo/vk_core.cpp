@@ -14,6 +14,19 @@ namespace vktg
 {
 
 
+    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+        VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
+        VkDebugUtilsMessageTypeFlagsEXT             messageType,
+        const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+        void*  )  
+    {
+        std::cerr << "validation layer  [" <<  messageSeverity << "], (" << messageType << ") : " << pCallbackData->pMessage << '\n';
+
+        return VK_FALSE;
+    }
+
+
+
     vk::Instance Instance() {
 
         static vk::Instance instance;
@@ -56,5 +69,40 @@ namespace vktg
         return instance;
     }
 
-    
+
+    vk::DebugUtilsMessengerEXT DebugMessenger() {
+
+        static vk::DebugUtilsMessengerEXT debugMessenger;
+
+        if (!debugMessenger)
+        {
+            auto debugMessengerInfo = vk::DebugUtilsMessengerCreateInfoEXT{}
+                .setMessageSeverity(
+                    // vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+                    vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+                    vk::DebugUtilsMessageSeverityFlagBitsEXT::eError 
+                )
+                .setMessageType(
+                    vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+                    vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+                    vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance 
+                )
+                .setPfnUserCallback( DebugCallback);	
+            
+            VK_CHECK( Instance().createDebugUtilsMessengerEXT( &debugMessengerInfo, nullptr, &debugMessenger) );
+        }
+
+        return debugMessenger;
+    }
+
+
+    void StartUp(uint32_t windowWidth, uint32_t windowHeight, std::string windowTitle) {
+
+        Instance();
+#ifndef NDEBUG
+        DebugMessenger();
+#endif
+    }
+
+
 } // namespace vktg

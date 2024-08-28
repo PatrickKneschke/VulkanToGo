@@ -19,9 +19,13 @@
 
 namespace vktg
 {
-    
+
 
     vk::Instance Instance();
+    vk::DebugUtilsMessengerEXT DebugMessenger();
+
+
+    void StartUp( uint32_t windowWidth, uint32_t windowHeight, std::string windowTitle);
 
 
 } // namespace vktg

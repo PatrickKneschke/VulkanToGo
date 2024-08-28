@@ -4,9 +4,10 @@
 #include "../vulkantogo/vk_core.h"
 
 
-TEST_CASE("create instance", "[core]") {
+TEST_CASE("startup core", "[core]") {
 
-    auto instance = vktg::Instance();
-
-    REQUIRE_FALSE( !instance);
+    vktg::StartUp( 1920, 1080, "Title");
+    
+    REQUIRE_FALSE( !vktg::Instance());
+    REQUIRE_FALSE( !vktg::DebugMessenger());
 }
