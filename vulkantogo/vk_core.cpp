@@ -131,12 +131,29 @@ namespace vktg
     }
 
 
+    vk::SurfaceKHR Surface() {
+
+        static vk::SurfaceKHR surface;
+
+        if (!surface)
+        {
+            VkSurfaceKHR tempSurface;
+            VK_CHECK( (vk::Result)glfwCreateWindowSurface( Instance(), Window(), nullptr, &tempSurface) );
+            surface = vk::SurfaceKHR( tempSurface);
+        }
+
+        return surface;
+    }
+
+
     void StartUp() {
 
+        Window();
         Instance();
 #ifndef NDEBUG
         DebugMessenger();
 #endif
+        Surface();
     }
 
 

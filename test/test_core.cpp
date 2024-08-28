@@ -11,4 +11,5 @@ TEST_CASE("startup core", "[core]") {
     REQUIRE_FALSE( !vktg::Window());
     REQUIRE_FALSE( !vktg::Instance());
     REQUIRE_FALSE( !vktg::DebugMessenger());
+    REQUIRE_FALSE( !vktg::Surface());
 }

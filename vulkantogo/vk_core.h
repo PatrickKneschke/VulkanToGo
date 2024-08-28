@@ -32,6 +32,7 @@ namespace vktg
     GLFWwindow* Window();
     vk::Instance Instance();
     vk::DebugUtilsMessengerEXT DebugMessenger();
+    vk::SurfaceKHR Surface();
 
 
     void StartUp();
