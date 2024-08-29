@@ -3,6 +3,7 @@
 #include "vk_core.h"
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <unordered_set>
 
@@ -15,6 +16,10 @@ namespace vktg
 {
 
     /***   CONFIG   ***/
+
+    static std::string sWindowTitle = "Main";
+    static uint32_t sWindowWidth = 1920;
+    static uint32_t sWindowHeight = 1080;
 
     static std::vector<const char*> GetRequiredExtensions() {
 
@@ -108,7 +113,7 @@ namespace vktg
             glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
             // create window
-            window = glfwCreateWindow( WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, nullptr, nullptr);
+            window = glfwCreateWindow( sWindowWidth, sWindowHeight, sWindowTitle.c_str(), nullptr, nullptr);
 
             // additional window configs
             // glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
