@@ -14,6 +14,13 @@ TEST_CASE("startup core", "[core]") {
     REQUIRE_FALSE( !vktg::Surface());
     REQUIRE_FALSE( !vktg::Gpu());
     REQUIRE_FALSE( !vktg::Device());
+    
+    REQUIRE( vktg::GraphicsQueueIndex() >= 0);
+    REQUIRE_FALSE( !vktg::GraphicsQueue());
+    REQUIRE( vktg::ComputeQueueIndex() >= 0);
+    REQUIRE_FALSE( !vktg::ComputeQueue());
+    REQUIRE( vktg::TransferQueueIndex() >= 0);
+    REQUIRE_FALSE( !vktg::TransferQueue());
 
     vktg::ShutDown();
 }

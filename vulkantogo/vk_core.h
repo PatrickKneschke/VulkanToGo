@@ -19,6 +19,13 @@
 
 namespace vktg
 {
+
+
+    enum class QueueType : uint8_t {
+        GRAPHICS = 0,
+        COMPUTE = 1,
+        TRANSFER = 2
+    };
     
 
     GLFWwindow* Window();
@@ -27,7 +34,14 @@ namespace vktg
     vk::SurfaceKHR Surface();
     vk::PhysicalDevice Gpu();
     vk::Device Device();
-
+    uint32_t QueueIndex( QueueType type, int queueIdx = -1);
+    uint32_t GraphicsQueueIndex();
+    uint32_t ComputeQueueIndex();
+    uint32_t TransferQueueIndex();
+    vk::Queue Queue( QueueType type, int queueIdx = -1);
+    vk::Queue GraphicsQueue();
+    vk::Queue ComputeQueue();
+    vk::Queue TransferQueue();
 
     void StartUp();
     void ShutDown();

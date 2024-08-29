@@ -254,8 +254,6 @@ namespace vktg
                 if ( queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
                 {
                     graphicsQueueIdx = i;
-                    computeQueueIdx = i;
-                    transferQueueIdx = i;
                 }
                 else if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute)
                 {
@@ -312,12 +310,113 @@ namespace vktg
             // init dispatch loader with device
             VULKAN_HPP_DEFAULT_DISPATCHER.init( device);
 
-
-
+            // create queues
+            Queue( QueueType::GRAPHICS, graphicsQueueIdx);
+            QueueIndex( QueueType::GRAPHICS, graphicsQueueIdx);
+            if (computeQueueIdx >= 0)
+            {
+                Queue( QueueType::COMPUTE, computeQueueIdx);
+                QueueIndex( QueueType::COMPUTE, computeQueueIdx);
+            }
+            else
+            {
+                Queue( QueueType::COMPUTE, graphicsQueueIdx);
+                QueueIndex( QueueType::COMPUTE, graphicsQueueIdx);
+            }
+            if (transferQueueIdx >= 0)
+            {
+                Queue( QueueType::TRANSFER, transferQueueIdx);
+                QueueIndex( QueueType::TRANSFER, transferQueueIdx);
+            }
+            else
+            {
+                Queue( QueueType::TRANSFER, graphicsQueueIdx);
+                QueueIndex( QueueType::TRANSFER, graphicsQueueIdx);
+            }
         }
 
         return device;
     }
+
+
+    uint32_t QueueIndex( QueueType type, int queueIdx) {
+
+        static int32_t graphicsQueueIdx = -1;
+        static int32_t computeQueueIdx = -1;
+        static int32_t transferQueueIdx = -1;
+
+        uint32_t idx;
+        if (type == QueueType::GRAPHICS)
+        {
+            if (graphicsQueueIdx < 0  &&  queueIdx >= 0)
+            {
+                graphicsQueueIdx = queueIdx;
+            }
+            idx = graphicsQueueIdx;
+        }
+        else if (type == QueueType::COMPUTE)
+        {
+            if (computeQueueIdx < 0  &&  queueIdx >= 0)
+            {
+                computeQueueIdx = queueIdx;
+            }
+            idx = computeQueueIdx;
+        }
+        else if (type == QueueType::TRANSFER)
+        {
+            if (transferQueueIdx < 0  &&  queueIdx >= 0)
+            {
+                transferQueueIdx = queueIdx;
+            }
+            idx = transferQueueIdx;
+        }
+
+        return idx;
+    }
+
+    uint32_t GraphicsQueueIndex() { return QueueIndex( QueueType::GRAPHICS); }
+    uint32_t ComputeQueueIndex() { return QueueIndex( QueueType::COMPUTE); }
+    uint32_t TransferQueueIndex() { return QueueIndex( QueueType::TRANSFER); }
+
+
+    vk::Queue Queue( QueueType type, int queueIdx) {
+
+        static vk::Queue graphicsQueue;
+        static vk::Queue computeQueue;
+        static vk::Queue transferQueue;
+
+        vk::Queue queue;
+        if (type == QueueType::GRAPHICS)
+        {
+            if (!graphicsQueue)
+            {
+                Device().getQueue( queueIdx, 0, &graphicsQueue);
+            }
+            queue = graphicsQueue;
+        }
+        else if (type == QueueType::COMPUTE)
+        {
+            if (!computeQueue)
+            {
+                Device().getQueue( queueIdx, 0, &computeQueue);
+            }
+            queue = computeQueue;
+        }
+        else if (type == QueueType::TRANSFER)
+        {
+            if (!transferQueue)
+            {
+                Device().getQueue( queueIdx, 0, &transferQueue);
+            }
+            queue = transferQueue;
+        }
+
+        return queue;
+    }
+
+    vk::Queue GraphicsQueue() { return Queue( QueueType::GRAPHICS); }
+    vk::Queue ComputeQueue() { return Queue( QueueType::COMPUTE); }
+    vk::Queue TransferQueue() { return Queue( QueueType::TRANSFER); }
 
 
     void StartUp() {
