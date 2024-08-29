@@ -42,6 +42,7 @@ namespace vktg
     vk::Queue GraphicsQueue();
     vk::Queue ComputeQueue();
     vk::Queue TransferQueue();
+    vma::Allocator Allocator();
 
     void StartUp();
     void ShutDown();

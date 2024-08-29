@@ -419,6 +419,25 @@ namespace vktg
     vk::Queue TransferQueue() { return Queue( QueueType::TRANSFER); }
 
 
+    vma::Allocator Allocator() {
+
+        static vma::Allocator allocator;
+
+        if ( !allocator)
+        {
+            auto allocatorInfo = vma::AllocatorCreateInfo{}
+                .setInstance( Instance() )
+                .setPhysicalDevice( Gpu() )
+                .setDevice( Device() )
+                .setFlags( vma::AllocatorCreateFlagBits::eBufferDeviceAddress);
+                
+            VK_CHECK( vma::createAllocator( &allocatorInfo, &allocator) );
+        }
+
+        return allocator;
+    }
+
+
     void StartUp() {
 
         Window();
@@ -429,10 +448,14 @@ namespace vktg
         Surface();
         Gpu();
         Device();
+        Allocator();
     }
 
 
     void ShutDown() {
+
+        // allocator
+        Allocator().destroy();
 
         // device
         Device().destroy();

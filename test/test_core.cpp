@@ -22,5 +22,7 @@ TEST_CASE("startup core", "[core]") {
     REQUIRE( vktg::TransferQueueIndex() >= 0);
     REQUIRE_FALSE( !vktg::TransferQueue());
 
+    REQUIRE_FALSE( !vktg::Allocator());
+
     vktg::ShutDown();
 }
