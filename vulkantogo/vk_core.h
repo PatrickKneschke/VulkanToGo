@@ -34,6 +34,7 @@ namespace vktg
     vk::DebugUtilsMessengerEXT DebugMessenger();
     vk::SurfaceKHR Surface();
     vk::PhysicalDevice Gpu();
+    vk::Device Device();
 
 
     void StartUp();

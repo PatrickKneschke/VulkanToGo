@@ -2,8 +2,9 @@
 #define VMA_IMPLEMENTATION
 #include "vk_core.h"
 
-#include <vector>
 #include <iostream>
+#include <vector>
+#include <unordered_set>
 
 
 // unique definition of default dispatch loader
@@ -12,6 +13,61 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 
 namespace vktg
 {
+
+    /***   CONFIG   ***/
+
+    static std::vector<const char*> GetRequiredExtensions() {
+
+        return {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+            VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME
+        };
+    }
+
+    static vk::PhysicalDeviceFeatures2 GetVulkan10DeviceFeatures() {
+
+        auto features = vk::PhysicalDeviceFeatures2{};
+        features.features
+            .setSamplerAnisotropy( VK_TRUE)
+            .setSampleRateShading( VK_TRUE)
+            .setDepthClamp( VK_TRUE)
+            .setGeometryShader( VK_TRUE)
+            .setTessellationShader( VK_TRUE)
+            .setMultiDrawIndirect( VK_TRUE)
+            .setDrawIndirectFirstInstance( VK_TRUE)
+            .setFillModeNonSolid( VK_TRUE)
+            .setShaderFloat64( VK_TRUE)
+            .setWideLines( VK_TRUE);
+
+        return features;
+    }
+
+    static vk::PhysicalDeviceVulkan11Features GetVulkan11DeviceFeatures() {
+        
+        auto features11 = vk::PhysicalDeviceVulkan11Features{};
+
+        return features11;
+    }
+
+    static vk::PhysicalDeviceVulkan12Features GetVulkan12DeviceFeatures() {
+        
+        auto features12 = vk::PhysicalDeviceVulkan12Features{}
+            .setBufferDeviceAddress( VK_TRUE )
+            .setSamplerFilterMinmax( VK_TRUE )
+            .setDescriptorIndexing( VK_TRUE );
+
+        return features12;
+    }
+
+    static vk::PhysicalDeviceVulkan13Features GetVulkan13DeviceFeatures() {
+        
+        auto features13 = vk::PhysicalDeviceVulkan13Features{}
+            .setDynamicRendering( VK_TRUE );
+
+        return features13;
+    }
+
+    /***   CONFIG END  ***/
 
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -177,6 +233,87 @@ namespace vktg
         return chosenGpu;
     }
 
+    
+    vk::Device Device() {
+
+        static vk::Device device;
+
+        if (!device)
+        {
+            // find queue family indices
+            // pick seperate queues for compute and transfer commands if available
+            int graphicsQueueIdx = -1, computeQueueIdx = -1, transferQueueIdx = -1;
+            auto queueFamilies = Gpu().getQueueFamilyProperties();
+            for (int i = 0; i < queueFamilies.size(); i++)
+            {
+                if ( queueFamilies[i].queueFlags & vk::QueueFlagBits::eGraphics)
+                {
+                    graphicsQueueIdx = i;
+                    computeQueueIdx = i;
+                    transferQueueIdx = i;
+                }
+                else if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eCompute)
+                {
+                    computeQueueIdx = i;
+                }
+                else if (queueFamilies[i].queueFlags & vk::QueueFlagBits::eTransfer)
+                {
+                    transferQueueIdx = i;
+                }
+            }
+            std::unordered_set<int> uniqueQueueFamilies = { graphicsQueueIdx, computeQueueIdx, transferQueueIdx};
+
+            // queue create infos
+            std::vector<vk::DeviceQueueCreateInfo> queueInfos;
+            float priority = 0.f;
+            for (auto family : uniqueQueueFamilies)
+            {
+                if (family < 0)
+                {
+                    continue;
+                }
+
+                auto queueInfo = vk::DeviceQueueCreateInfo{}
+                    .setPQueuePriorities( &priority )
+                    .setQueueCount( 1 )
+                    .setQueueFamilyIndex( family );
+
+                queueInfos.push_back( queueInfo);
+            }
+
+            // required extentions
+            auto requiredExtensions = GetRequiredExtensions();
+
+            // enable device features
+            auto enabledFeatures = GetVulkan10DeviceFeatures();
+            auto enabledFeatures11 = GetVulkan11DeviceFeatures();
+            auto enabledFeatures12 = GetVulkan12DeviceFeatures();
+            auto enabledFeatures13 = GetVulkan13DeviceFeatures();
+            enabledFeatures.pNext = &enabledFeatures11;
+            enabledFeatures11.pNext = &enabledFeatures12;
+            enabledFeatures12.pNext = &enabledFeatures13;
+
+            // create device
+            auto deviceInfo = vk::DeviceCreateInfo{}
+                .setQueueCreateInfoCount( (uint32_t)queueInfos.size() )
+                .setPQueueCreateInfos( queueInfos.data() )
+                .setEnabledExtensionCount( (uint32_t)requiredExtensions.size() )
+                .setPpEnabledExtensionNames( requiredExtensions.data() )
+                .setPEnabledFeatures( nullptr )
+                .setPNext( &enabledFeatures);
+
+            VK_CHECK( Gpu().createDevice(&deviceInfo, nullptr, &device) );
+
+            // init dispatch loader with device
+            VULKAN_HPP_DEFAULT_DISPATCHER.init( device);
+
+
+
+        }
+
+        return device;
+    }
+
 
     void StartUp() {
 
@@ -187,10 +324,14 @@ namespace vktg
 #endif
         Surface();
         Gpu();
+        Device();
     }
 
 
     void ShutDown() {
+
+        // device
+        Device().destroy();
 
         // surface
         Instance().destroySurfaceKHR( Surface());

@@ -13,6 +13,7 @@ TEST_CASE("startup core", "[core]") {
     REQUIRE_FALSE( !vktg::DebugMessenger());
     REQUIRE_FALSE( !vktg::Surface());
     REQUIRE_FALSE( !vktg::Gpu());
+    REQUIRE_FALSE( !vktg::Device());
 
     vktg::ShutDown();
 }

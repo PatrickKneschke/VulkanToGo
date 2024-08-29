@@ -6,8 +6,15 @@
 
 int main() {
 
-    auto instance = vktg::Instance();
-    std::cout << instance << '\n';
+    vktg::StartUp();
+
+    std::cout << vktg::Instance() << '\n';
+    std::cout << vktg::Window() << '\n';
+    std::cout << vktg::Surface() << '\n';
+    std::cout << vktg::Gpu() << '\n';
+    std::cout << vktg::Device() << '\n';
+
+    vktg::ShutDown();
 
     return 0;
 }
