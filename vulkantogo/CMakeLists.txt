@@ -9,8 +9,10 @@ add_library( vktg)
 target_sources( vktg PRIVATE
     vulkantogo.h 
     vk_core.h 
+    storage.h 
 
     vk_core.cpp 
+    storage.cpp 
 )
 
 target_link_libraries( vktg

@@ -2,6 +2,7 @@
 #include <catch2/catch.hpp>
 
 #include "../vulkantogo/vk_core.h"
+#include "../vulkantogo/storage.h"
 
 
 TEST_CASE("startup core", "[core]") {
@@ -23,6 +24,4 @@ TEST_CASE("startup core", "[core]") {
     REQUIRE_FALSE( !vktg::TransferQueue());
 
     REQUIRE_FALSE( !vktg::Allocator());
-
-    vktg::ShutDown();
 }
