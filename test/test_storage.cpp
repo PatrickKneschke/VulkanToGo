@@ -27,3 +27,20 @@ TEST_CASE("create buffer", "[storage]") {
     REQUIRE_FALSE( !buffer.allocation);
     REQUIRE( buffer.allocationInfo.pMappedData != nullptr);
 }
+
+
+TEST_CASE("create image", "[storage]") {
+
+    vktg::Image image = vktg::CreateImage( 
+        256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth, 8);
+
+    REQUIRE_FALSE( !image.image);
+    REQUIRE_FALSE( !image.imageView);
+    REQUIRE_FALSE( !image.allocation);
+    REQUIRE( image.imageInfo.extent == vk::Extent3D{256, 256, 1});
+    REQUIRE( image.imageInfo.mipLevels == 8);
+    REQUIRE( image.imageInfo.arrayLayers == 1);
+    REQUIRE( image.imageInfo.format == vk::Format::eD32Sfloat);
+    REQUIRE( image.imageInfo.imageType == vk::ImageType::e2D);
+}
+
