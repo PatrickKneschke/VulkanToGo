@@ -3,6 +3,7 @@ add_executable( test_all
     test_main.cpp 
     test_core.cpp 
     test_storage.cpp 
+    test_swapchain.cpp 
 )
 
 target_include_directories( test_all 

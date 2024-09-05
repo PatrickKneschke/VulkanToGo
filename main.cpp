@@ -8,21 +8,35 @@ int main() {
 
     vktg::StartUp();
 
-    std::cout << "StartUp\n";
-    std::cout << vktg::Instance() << '\n';
-    std::cout << vktg::Window() << '\n';
-    std::cout << vktg::Surface() << '\n';
-    std::cout << vktg::Gpu() << '\n';
-    std::cout << vktg::Device() << '\n';
 
-    std::cout << "Buffer\n";
-    vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer, vma::MemoryUsage::eGpuOnly);
+    // swapchain
+    vktg::Swapchain swapchain = vktg::PrepareSwapchain();
+    vktg::CreateSwapchain( swapchain);
 
-    std::cout << buffer.buffer << '\n';
-    std::cout << buffer.bufferSize << '\n';
-    std::cout << vk::to_string( buffer.bufferUsage) << '\n';
-    std::cout << vma::to_string(buffer.memoryUsage) << '\n';
-    std::cout << buffer.allocation << '\n';
+    vktg::Image renderImage = vktg::CreateImage(
+        1920, 1080, vk::Format::eR16G16B16A16Sfloat, 
+        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
+    ); 
+
+
+    vk::Semaphore renderSemaphore, presentSemaphore;
+    auto semaphoreInfo = vk::SemaphoreCreateInfo{};
+    VK_CHECK( vktg::Device().createSemaphore( &semaphoreInfo, nullptr, &renderSemaphore) );
+    VK_CHECK( vktg::Device().createSemaphore( &semaphoreInfo, nullptr, &presentSemaphore) );
+    vk::Fence renderFence;
+    auto fenceInfo = vk::FenceCreateInfo{}.setFlags( vk::FenceCreateFlagBits::eSignaled);
+    VK_CHECK( vktg::Device().createFence( &fenceInfo, nullptr, &renderFence) );
+
+
+    // redner loop
+    while (!glfwWindowShouldClose( vktg::Window())) 
+    {
+        uint32_t imageIndex;
+        vktg::NextSwapchainImage( swapchain, renderSemaphore, &imageIndex);
+
+        vktg::PresentImage( swapchain, &presentSemaphore, &imageIndex);
+    }
+
 
     vktg::ShutDown();
 

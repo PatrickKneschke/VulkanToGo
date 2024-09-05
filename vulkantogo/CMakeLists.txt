@@ -10,9 +10,11 @@ target_sources( vktg PRIVATE
     vulkantogo.h 
     vk_core.h 
     storage.h 
+    swapchain.h 
 
     vk_core.cpp 
     storage.cpp 
+    swapchain.cpp 
 )
 
 target_link_libraries( vktg
