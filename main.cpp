@@ -19,13 +19,9 @@ int main() {
     ); 
 
 
-    vk::Semaphore renderSemaphore, presentSemaphore;
-    auto semaphoreInfo = vk::SemaphoreCreateInfo{};
-    VK_CHECK( vktg::Device().createSemaphore( &semaphoreInfo, nullptr, &renderSemaphore) );
-    VK_CHECK( vktg::Device().createSemaphore( &semaphoreInfo, nullptr, &presentSemaphore) );
-    vk::Fence renderFence;
-    auto fenceInfo = vk::FenceCreateInfo{}.setFlags( vk::FenceCreateFlagBits::eSignaled);
-    VK_CHECK( vktg::Device().createFence( &fenceInfo, nullptr, &renderFence) );
+    vk::Fence renderFence = vktg::CreateFence();
+    vk::Semaphore renderSemaphore = vktg::CreateSemaphore();
+    vk::Semaphore presentSemaphore = vktg::CreateSemaphore();
 
 
     // redner loop
@@ -36,6 +32,11 @@ int main() {
 
         vktg::PresentImage( swapchain, &presentSemaphore, &imageIndex);
     }
+
+
+    vktg::DestroyFence( renderFence);
+    vktg::DestroySemaphore( renderSemaphore);
+    vktg::DestroySemaphore( presentSemaphore);
 
 
     vktg::ShutDown();

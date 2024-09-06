@@ -59,6 +59,7 @@ namespace vktg
         auto features12 = vk::PhysicalDeviceVulkan12Features{}
             .setBufferDeviceAddress( VK_TRUE )
             .setSamplerFilterMinmax( VK_TRUE )
+            .setTimelineSemaphore( VK_TRUE )
             .setDescriptorIndexing( VK_TRUE );
 
         return features12;

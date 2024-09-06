@@ -11,10 +11,12 @@ target_sources( vktg PRIVATE
     vk_core.h 
     storage.h 
     swapchain.h 
+    synchronization.h 
 
     vk_core.cpp 
     storage.cpp 
     swapchain.cpp 
+    synchronization.cpp 
 )
 
 target_link_libraries( vktg
