@@ -2,6 +2,7 @@
 
 
 #include "vk_core.h"
+#include "commands.h"
 #include "deletion_stack.h"
 #include "storage.h"
 #include "swapchain.h"

@@ -12,12 +12,13 @@ int main() {
     // deletion stack
     vktg::DeletionStack deletionStack = vktg::DeletionStack{};
 
+
     // swapchain
     vktg::Swapchain swapchain = vktg::PrepareSwapchain();
     vktg::CreateSwapchain( swapchain);
 
     vktg::Image renderImage = vktg::CreateImage(
-        1920, 1080, vk::Format::eR16G16B16A16Sfloat, 
+        swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
         vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
     ); 
 
@@ -37,12 +38,56 @@ int main() {
         vktg::DestroySemaphore( presentSemaphore);
     });
 
+    
+    // command pool and command buffer
+    vk::CommandPool graphicsCmdPool = vktg::CreateCommandPool( vktg::GraphicsQueueIndex());
+    deletionStack.Push( [=](){
+        vktg::DestroyCommandPool( graphicsCmdPool);
+    });
+    vk::CommandBuffer cmd = vktg::AllocateCommandBuffer( graphicsCmdPool);
 
-    // redner loop
+
+    // render loop
     while (!glfwWindowShouldClose( vktg::Window())) 
     {
+        // recreate swapchain if outdated
+        if (!swapchain.isValid)
+        {
+            vktg::CreateSwapchain( swapchain);
+        }
+
+        // wait for render fence to record render commands
+        VK_CHECK( vktg::Device().waitForFences( renderFence, true, 1e9) );
+        VK_CHECK( vktg::Device().resetFences( 1, &renderFence) );
+
+
+        // get next swapchain image
         uint32_t imageIndex;
-        vktg::NextSwapchainImage( swapchain, renderSemaphore, &imageIndex);
+        if (vktg::NextSwapchainImage( swapchain, renderSemaphore, &imageIndex))
+        {
+            continue;
+        }
+
+
+        // record render commands
+        cmd.reset( vk::CommandBufferResetFlagBits::eReleaseResources);
+        auto commandBeginInfo = vk::CommandBufferBeginInfo{}
+            .setFlags( vk::CommandBufferUsageFlagBits::eOneTimeSubmit );
+        VK_CHECK( cmd.begin( &commandBeginInfo) );
+
+        cmd.end();
+
+
+        vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+        auto submitInfo = vk::SubmitInfo{}
+            .setWaitSemaphoreCount( 1 )
+            .setPWaitSemaphores( &renderSemaphore )
+            .setPWaitDstStageMask( &waitStage )
+            .setCommandBufferCount( 1 )
+            .setPCommandBuffers( &cmd )
+            .setSignalSemaphoreCount( 1 )
+            .setPSignalSemaphores( &presentSemaphore );		
+        VK_CHECK( vktg::GraphicsQueue().submit( 1, &submitInfo, renderFence) );
 
         vktg::PresentImage( swapchain, &presentSemaphore, &imageIndex);
     }
@@ -50,7 +95,6 @@ int main() {
 
     // cleanup
     deletionStack.Flush();
-
     vktg::DestroySwapchain( swapchain);
 
     vktg::ShutDown();

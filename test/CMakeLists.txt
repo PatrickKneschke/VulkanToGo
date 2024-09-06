@@ -5,6 +5,7 @@ add_executable( test_all
     test_storage.cpp 
     test_swapchain.cpp 
     test_synchronization.cpp 
+    test_commands.cpp 
 )
 
 target_include_directories( test_all 
