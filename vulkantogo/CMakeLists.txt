@@ -9,6 +9,7 @@ add_library( vktg)
 target_sources( vktg PRIVATE
     vulkantogo.h 
     vk_core.h 
+    deletion_stack.h 
     storage.h 
     swapchain.h 
     synchronization.h 

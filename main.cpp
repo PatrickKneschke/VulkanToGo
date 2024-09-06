@@ -9,6 +9,9 @@ int main() {
     vktg::StartUp();
 
 
+    // deletion stack
+    vktg::DeletionStack deletionStack = vktg::DeletionStack{};
+
     // swapchain
     vktg::Swapchain swapchain = vktg::PrepareSwapchain();
     vktg::CreateSwapchain( swapchain);
@@ -19,9 +22,20 @@ int main() {
     ); 
 
 
+    // synchronization objects
     vk::Fence renderFence = vktg::CreateFence();
     vk::Semaphore renderSemaphore = vktg::CreateSemaphore();
     vk::Semaphore presentSemaphore = vktg::CreateSemaphore();
+
+    deletionStack.Push( [=](){
+        vktg::DestroyFence( renderFence);
+    });
+    deletionStack.Push( [=](){
+        vktg::DestroySemaphore( renderSemaphore);
+    });
+    deletionStack.Push( [=](){
+        vktg::DestroySemaphore( presentSemaphore);
+    });
 
 
     // redner loop
@@ -34,10 +48,10 @@ int main() {
     }
 
 
-    vktg::DestroyFence( renderFence);
-    vktg::DestroySemaphore( renderSemaphore);
-    vktg::DestroySemaphore( presentSemaphore);
+    // cleanup
+    deletionStack.Flush();
 
+    vktg::DestroySwapchain( swapchain);
 
     vktg::ShutDown();
 
