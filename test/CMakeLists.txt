@@ -6,6 +6,7 @@ add_executable( test_all
     test_swapchain.cpp 
     test_synchronization.cpp 
     test_commands.cpp 
+    test_pipelines.cpp 
 )
 
 target_include_directories( test_all 
