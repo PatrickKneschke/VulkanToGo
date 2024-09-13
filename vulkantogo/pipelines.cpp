@@ -151,7 +151,7 @@ namespace vktg
     }
 
     
-    uint32_t GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, std::string_view entryPointName) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, std::string_view entryPointName) {
 
         uint32_t idx = shaderInfos.size();
         shaderInfos.emplace_back( 
@@ -161,55 +161,76 @@ namespace vktg
                 .setPName( entryPointName.data() )
         );
 
-        return idx;
+        return *this;
     }
 
     
-    void GraphicsPipelineBuilder::ClearShaders() {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::ClearShaders() {
 
         shaderInfos.clear();
+
+        return *this;
     }
 
 
-    uint32_t GraphicsPipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout) {
     
         uint32_t idx = descriptorLayouts.size();
         descriptorLayouts.push_back( descriptorLayout);
 
-        return idx;
+        return *this;
     }
 
     
-    void GraphicsPipelineBuilder::ClearDescriptorLayouts() {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::ClearDescriptorLayouts() {
     
         descriptorLayouts.clear();
+
+        return *this;
     }
 
 
-    uint32_t GraphicsPipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
     
         uint32_t idx = pushConstants.size();
         pushConstants.push_back( pushConstant);
 
-        return idx;
+        return *this;
     }
 
     
-    void GraphicsPipelineBuilder::ClearPushConstants() {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::ClearPushConstants() {
 
         pushConstants.clear();
+
+        return *this;
     }
 
 
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::SetInputAssembly( vk::PrimitiveTopology topology, bool enablePrimitiveRestart) {
-  
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::SetVertexInputBindng( vk::VertexInputBindingDescription binding) {
+
+        vertexInputBinding = binding;
+
+        return *this;
+    }
+
+    
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::SetVertexAttributes( std::span<vk::VertexInputAttributeDescription> attributes) {
+
+        vertexAttributes = std::vector<vk::VertexInputAttributeDescription>( attributes.begin(), attributes.end());
+
+        return *this;
+    }
+
+
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::SetInputAssembly(vk::PrimitiveTopology topology, bool enablePrimitiveRestart) {
+
         inputAssemblyInfo
             .setTopology( topology )
             .setPrimitiveRestartEnable( enablePrimitiveRestart );
 
         return *this;
     }
-
 
     GraphicsPipelineBuilder& GraphicsPipelineBuilder::SetCulling( vk::CullModeFlagBits cullMode, vk::FrontFace frontFace) {
     

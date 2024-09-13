@@ -74,13 +74,16 @@ namespace vktg
         void Reset() override;
         Pipeline Build() override;
 
-        uint32_t AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, std::string_view entryPointName = "main");
-        void ClearShaders();
-        uint32_t AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
-        void ClearDescriptorLayouts();
-        uint32_t AddPushConstant( vk::PushConstantRange pushConstant);
-        void ClearPushConstants();
+        GraphicsPipelineBuilder& AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, std::string_view entryPointName = "main");
+        GraphicsPipelineBuilder& ClearShaders();
+        GraphicsPipelineBuilder& AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
+        GraphicsPipelineBuilder& ClearDescriptorLayouts();
+        GraphicsPipelineBuilder& AddPushConstant( vk::PushConstantRange pushConstant);
+        GraphicsPipelineBuilder& ClearPushConstants();
 
+        // vertex input
+        GraphicsPipelineBuilder& SetVertexInputBindng( vk::VertexInputBindingDescription binding);
+        GraphicsPipelineBuilder& SetVertexAttributes( std::span<vk::VertexInputAttributeDescription> attributes);
         // input assembly
         GraphicsPipelineBuilder& SetInputAssembly( vk::PrimitiveTopology topology, bool enablePrimitiveRestart = false);
         // rasterization

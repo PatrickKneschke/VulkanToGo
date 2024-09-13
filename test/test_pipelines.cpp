@@ -105,13 +105,12 @@ TEST_CASE( "add shaders to graphics pipeline bulder", "[pipelines]") {
     vk::ShaderModule vertShader = vktg::LoadShader( "../res/shaders/test_vert.spv");
     vk::ShaderModule fragShader = vktg::LoadShader( "../res/shaders/test_frag.spv");
 
-    uint32_t vertIdx = builder.AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, "main");
-    uint32_t fragIdx = builder.AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, "main");
+    builder
+        .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, "main")
+        .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, "main");
 
-    REQUIRE( vertIdx == 0 );
-    REQUIRE( fragIdx == 1 );
-    REQUIRE( builder.shaderInfos[vertIdx].stage == vk::ShaderStageFlagBits::eVertex );
-    REQUIRE( builder.shaderInfos[fragIdx].stage == vk::ShaderStageFlagBits::eFragment );
+    REQUIRE( builder.shaderInfos[0].stage == vk::ShaderStageFlagBits::eVertex );
+    REQUIRE( builder.shaderInfos[1].stage == vk::ShaderStageFlagBits::eFragment );
 }
 
 
@@ -123,6 +122,43 @@ TEST_CASE( "set graphics pipeline builder dynamic states", "[pipelines]") {
     REQUIRE( builder.dynamicStates.size() == 2 );
     REQUIRE( builder.dynamicStates[0] == vk::DynamicState::eViewport );
     REQUIRE( builder.dynamicStates[1] == vk::DynamicState::eScissor );
+}
+
+
+TEST_CASE( "set graphics pipeline builder vertex input binding", "[pipelines]") {
+
+    vktg::GraphicsPipelineBuilder builder;
+    builder.SetVertexInputBindng( 
+        vk::VertexInputBindingDescription{}
+            .setBinding( 0 )
+            .setStride( 4 * sizeof(float) )
+            .setInputRate( vk::VertexInputRate::eVertex )
+    );
+
+    REQUIRE( builder.vertexInputBinding.binding == 0 );
+    REQUIRE( builder.vertexInputBinding.stride == 4 * sizeof(float) );
+    REQUIRE( builder.vertexInputBinding.inputRate == vk::VertexInputRate::eVertex );
+}
+
+
+TEST_CASE( "set graphics pipeline builder vertex stributes", "[pipelines]") {
+
+    vktg::GraphicsPipelineBuilder builder;
+
+    std::vector<vk::VertexInputAttributeDescription> attributes = {
+        vk::VertexInputAttributeDescription{}
+            .setLocation( 0 )
+            .setBinding( 0 )
+            .setFormat( vk::Format::eR32G32B32A32Sfloat )
+            .setOffset( 0 )
+    };
+
+    builder.SetVertexAttributes( attributes );
+
+    REQUIRE( builder.vertexAttributes[0].location == 0 );
+    REQUIRE( builder.vertexAttributes[0].binding == 0 );
+    REQUIRE( builder.vertexAttributes[0].format == vk::Format::eR32G32B32A32Sfloat );
+    REQUIRE( builder.vertexAttributes[0].offset == 0 );
 }
 
 
@@ -292,13 +328,11 @@ TEST_CASE( "create graphics pipeline", "[pipelines]") {
     
     vk::ShaderModule vertShader = vktg::LoadShader( "../res/shaders/test_vert.spv");
     vk::ShaderModule fragShader = vktg::LoadShader( "../res/shaders/test_frag.spv");
-
-    builder.AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, "main");
-    builder.AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, "main");
-
     std::vector<vk::Format> colorAttachmentFormats = {vk::Format::eR16G16B16A16Sfloat};
 
     vktg::Pipeline pipeline = builder
+        .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, "main")
+        .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, "main")    
         .SetInputAssembly( vk::PrimitiveTopology::eTriangleList)
         .SetPolygonMode( vk::PolygonMode::eFill )
         .SetCulling( vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise )

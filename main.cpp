@@ -23,6 +23,11 @@ int main() {
     ); 
 
 
+    // compute pipeline
+    vktg::ComputePipelineBuilder computeBuilder;
+    
+
+
     // synchronization objects
     vk::Fence renderFence = vktg::CreateFence();
     vk::Semaphore renderSemaphore = vktg::CreateSemaphore();
