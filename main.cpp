@@ -23,9 +23,9 @@ int main() {
     ); 
 
 
-    // compute pipeline
+    // pipelines
     vktg::ComputePipelineBuilder computeBuilder;
-    
+    vktg::GraphicsPipelineBuilder graphicsBuilder;
 
 
     // synchronization objects

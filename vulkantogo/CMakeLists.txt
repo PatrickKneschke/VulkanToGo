@@ -15,6 +15,7 @@ target_sources( vktg PRIVATE
     synchronization.h 
     commands.h 
     pipelines.h 
+    descriptors.h 
 
     vk_core.cpp 
     storage.cpp 
@@ -22,6 +23,7 @@ target_sources( vktg PRIVATE
     synchronization.cpp 
     commands.cpp 
     pipelines.cpp 
+    descriptors.cpp
 )
 
 target_link_libraries( vktg

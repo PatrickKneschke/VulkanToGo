@@ -4,6 +4,8 @@
 #include "../vulkantogo/pipelines.h"
 #include "../vulkantogo/storage.h"
 
+#include <vector>
+
 
 TEST_CASE( "create pipeline layout", "[pipelines]") {
 
@@ -345,4 +347,7 @@ TEST_CASE( "create graphics pipeline", "[pipelines]") {
         
     REQUIRE_FALSE( !pipeline.pipelineLayout );
     REQUIRE_FALSE( !pipeline.pipeline );
+
+    vktg::DestroyPipelineLayout( pipeline.pipelineLayout);
+    vktg::DestroyPipeline( pipeline.pipeline);
 }
