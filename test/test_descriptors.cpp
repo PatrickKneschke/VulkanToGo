@@ -90,3 +90,28 @@ TEST_CASE( "descriptor layout cache", "[descriptors]") {
 
     cache.DestroyLayouts();
 }
+
+
+TEST_CASE( "descriptor allocator", "[descriptors]") {
+
+    uint32_t maxSetsPerPool = 10;
+    std::vector<vk::DescriptorPoolSize> poolSizes = {
+        vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer, maxSetsPerPool}
+    };
+    vktg::DescriptorSetAllocator allocator( poolSizes, maxSetsPerPool);
+
+    std::vector<vk::DescriptorSetLayoutBinding> bindings = {
+        vk::DescriptorSetLayoutBinding{}
+            .setBinding( 0 )
+            .setDescriptorCount( 1 )
+            .setDescriptorType( vk::DescriptorType::eStorageBuffer )   
+    };
+    vk::DescriptorSetLayout layout = vktg::CreateDescriptorSetLayout( bindings);
+
+    vk::DescriptorSet descriptorSet = allocator.Allocate( layout);
+
+    REQUIRE_FALSE( !descriptorSet );
+
+    allocator.ResetPools();
+    allocator.DestroyPools();
+}

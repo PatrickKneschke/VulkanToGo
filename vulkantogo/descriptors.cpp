@@ -43,7 +43,100 @@ namespace vktg
         }
     }
 
+
+    DescriptorSetAllocator::DescriptorSetAllocator() : mMaxSetsPerPool{ 1000} {
     
+        mPoolSizes = {
+            vk::DescriptorPoolSize{ vk::DescriptorType::eSampler,              (uint32_t)( (float)mMaxSetsPerPool * 0.5f) },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eSampledImage,         mMaxSetsPerPool * 4 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eCombinedImageSampler, mMaxSetsPerPool * 4 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageImage,         mMaxSetsPerPool * 4 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eUniformTexelBuffer,   mMaxSetsPerPool * 1 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageTexelBuffer,   mMaxSetsPerPool * 1 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBuffer,        mMaxSetsPerPool * 2 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBufferDynamic, mMaxSetsPerPool * 1 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer,        mMaxSetsPerPool * 4 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBufferDynamic, mMaxSetsPerPool * 1 },
+            vk::DescriptorPoolSize{ vk::DescriptorType::eInputAttachment,      (uint32_t)( (float)mMaxSetsPerPool * 0.5f) }
+        };
+    }
+
+    
+    DescriptorSetAllocator::DescriptorSetAllocator( std::span<vk::DescriptorPoolSize> poolSizes, uint32_t maxSetsPerPool) : 
+        mMaxSetsPerPool{maxSetsPerPool},
+        mPoolSizes( poolSizes.begin(), poolSizes.end())
+    {
+
+    }
+
+
+    vk::DescriptorSet DescriptorSetAllocator::Allocate( vk::DescriptorSetLayout layout) {
+
+        if (!mCurrPool)
+        {
+            mCurrPool = GetNewPool();
+        }
+
+        auto allocInfo = vk::DescriptorSetAllocateInfo{}
+            .setDescriptorPool( mCurrPool )
+            .setDescriptorSetCount( 1 )
+            .setPSetLayouts( &layout );
+
+        vk::DescriptorSet descriptorSet;
+        vk::Result result = Device().allocateDescriptorSets( &allocInfo, &descriptorSet);
+        if (result == vk::Result::eErrorFragmentedPool  ||  result == vk::Result::eErrorOutOfPoolMemory)
+        {
+            mCurrPool = GetNewPool();
+            VK_CHECK( Device().allocateDescriptorSets( &allocInfo, &descriptorSet) );
+        }
+
+        return descriptorSet;
+    }
+
+
+    void DescriptorSetAllocator::ResetPools() {
+ 
+        for (auto pool : mUsedPools)
+        {
+            Device().resetDescriptorPool( pool);
+            mFreePools.push_back( pool);
+        }        
+        mUsedPools.clear();
+        mCurrPool = VK_NULL_HANDLE;
+    }
+
+
+    void DescriptorSetAllocator::DestroyPools() {
+
+        for (auto pool : mFreePools) 
+        {
+            Device().destroyDescriptorPool( pool);
+        }
+        for (auto pool : mUsedPools) 
+        {
+            Device().destroyDescriptorPool( pool);
+        }
+    }
+
+
+    vk::DescriptorPool DescriptorSetAllocator::GetNewPool() {
+        
+        vk::DescriptorPool pool;
+        if (mFreePools.empty())
+        {
+            pool = CreateDescriptorPool( mPoolSizes, mMaxSetsPerPool);
+        }
+        else
+        {
+            pool = mFreePools.back();
+            mFreePools.pop_back();
+        }
+        mUsedPools.push_back( pool);
+
+        return pool;
+    }
+
+
     vk::DescriptorPool CreateDescriptorPool( std::span<vk::DescriptorPoolSize> poolSizes, uint32_t maxSets, vk::DescriptorPoolCreateFlags flags) {
 
         auto poolInfo = vk::DescriptorPoolCreateInfo{}
