@@ -115,3 +115,34 @@ TEST_CASE( "descriptor allocator", "[descriptors]") {
     allocator.ResetPools();
     allocator.DestroyPools();
 }
+
+
+TEST_CASE( "get descriptor buffer info", "[descriptors]") {
+
+    vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer);
+    vk::DescriptorBufferInfo bufferInfo = vktg::GetDescriptorBufferInfo( buffer.buffer, 128, 64);
+
+    REQUIRE_FALSE( !bufferInfo.buffer );
+    REQUIRE( bufferInfo.offset == 128 );
+    REQUIRE( bufferInfo.range == 64 );
+}
+
+
+TEST_CASE( "descriptor set builder", "[descriptors]") {
+
+    vktg::DescriptorLayoutCache layoutCache;
+    vktg::DescriptorSetAllocator setAllocator;
+
+    vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer);
+    vk::DescriptorBufferInfo bufferInfo = vktg::GetDescriptorBufferInfo( buffer.buffer, 128, 64);
+
+    vktg::Image image = vktg::CreateImage( 256, 256, vk::Format::eR32G32B32A32Sfloat, vk::ImageUsageFlagBits::eStorage);
+    vk::DescriptorImageInfo imageInfo = vktg::GetDescriptorImageInfo( image.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
+
+    vk::DescriptorSet descriptorSet = vktg::DescriptorSetBuilder( &setAllocator, &layoutCache)
+        .BindBuffer( 0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, &bufferInfo)
+        .BindImage( 1, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eFragment, &imageInfo)
+        .Build();
+
+    REQUIRE_FALSE( !descriptorSet );
+}

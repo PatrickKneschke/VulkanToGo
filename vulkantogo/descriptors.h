@@ -2,6 +2,7 @@
 
 
 #include "vk_core.h"
+#include "storage.h"
 
 #include <span>
 
@@ -50,6 +51,27 @@ namespace vktg
     };
 
 
+    class DescriptorSetBuilder {
+
+        public:
+
+            DescriptorSetBuilder( DescriptorSetAllocator *allocator, DescriptorLayoutCache *layoutCache) : pAllocator {allocator}, pLayoutCache {layoutCache} {}
+
+            DescriptorSetBuilder& BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorBufferInfo* bufferInfo);
+            DescriptorSetBuilder& BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorImageInfo* imageInfo);
+
+            vk::DescriptorSet Build();
+
+        private:
+
+            DescriptorSetAllocator* pAllocator;
+            DescriptorLayoutCache* pLayoutCache;
+
+            std::vector<vk::DescriptorSetLayoutBinding> mBindings;
+            std::vector<vk::WriteDescriptorSet> mWrites;
+    };
+
+
     vk::DescriptorPool CreateDescriptorPool( std::span<vk::DescriptorPoolSize> poolSizes, uint32_t maxSets, vk::DescriptorPoolCreateFlags flags = vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet);
 
     void DestroyDesciptorPool( vk::DescriptorPool pool);
@@ -59,6 +81,11 @@ namespace vktg
     void DestroyDescriptorSetLayout( vk::DescriptorSetLayout layout);
 
     vk::DescriptorSet AllocateDescriptorSet( vk::DescriptorPool pool, vk::DescriptorSetLayout layout);
+
+
+    vk::DescriptorBufferInfo GetDescriptorBufferInfo( vk::Buffer buffer, size_t offset = 0, size_t range = VK_WHOLE_SIZE);
+
+    vk::DescriptorImageInfo GetDescriptorImageInfo( vk::ImageView imageView, vk::Sampler sampler = VK_NULL_HANDLE, vk::ImageLayout layout = vk::ImageLayout::eShaderReadOnlyOptimal);
 
 
 } // namespace vktg

@@ -137,6 +137,67 @@ namespace vktg
     }
 
 
+    DescriptorSetBuilder& DescriptorSetBuilder::BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorBufferInfo *bufferInfo) {
+        
+        auto newBinding = vk::DescriptorSetLayoutBinding{}
+            .setBinding( binding )
+            .setDescriptorCount( 1 )
+            .setDescriptorType( type )
+            .setStageFlags( stages );
+        mBindings.push_back( newBinding);
+
+        auto newWrite = vk::WriteDescriptorSet{}
+            .setDstBinding( binding )
+            .setDescriptorCount( 1 )
+            .setPBufferInfo( bufferInfo )
+            .setDescriptorType( type );
+            // set dest set in Build()
+        mWrites.push_back( newWrite);
+        
+        return *this;
+    }
+
+
+    DescriptorSetBuilder& DescriptorSetBuilder::BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorImageInfo *imageInfo) {
+
+        auto newBinding = vk::DescriptorSetLayoutBinding{}
+            .setBinding( binding )
+            .setDescriptorCount( 1 )
+            .setDescriptorType( type )
+            .setStageFlags( stages );
+        mBindings.push_back( newBinding );
+
+        auto newWrite = vk::WriteDescriptorSet{}
+            .setDstBinding( binding )
+            .setDescriptorCount( 1 )
+            .setPImageInfo( imageInfo )
+            .setDescriptorType( type );
+            // set dest set in Build()
+        mWrites.push_back(newWrite);
+
+        return *this;
+    }
+
+
+    vk::DescriptorSet DescriptorSetBuilder::Build() {
+
+        auto layoutCreateInfo = vk::DescriptorSetLayoutCreateInfo{}
+            .setBindingCount( (uint32_t)mBindings.size())
+            .setPBindings( mBindings.data());
+
+        vk::DescriptorSetLayout layout = pLayoutCache->CreateLayout( &layoutCreateInfo);
+
+        vk::DescriptorSet descriptorSet = pAllocator->Allocate( layout);
+        for (auto &write : mWrites) 
+        {
+            write.setDstSet( descriptorSet );
+        }
+        Device().updateDescriptorSets( (uint32_t)mWrites.size(), mWrites.data(), 0, nullptr);   
+
+        return descriptorSet;
+    }
+
+
     vk::DescriptorPool CreateDescriptorPool( std::span<vk::DescriptorPoolSize> poolSizes, uint32_t maxSets, vk::DescriptorPoolCreateFlags flags) {
 
         auto poolInfo = vk::DescriptorPoolCreateInfo{}
@@ -184,6 +245,28 @@ namespace vktg
         VK_CHECK( Device().allocateDescriptorSets( &allocInfo, &descriptorSet) );
 
         return descriptorSet;
+    }
+
+    
+    vk::DescriptorBufferInfo GetDescriptorBufferInfo( vk::Buffer buffer, size_t offset, size_t range) {
+
+        auto bufferInfo = vk::DescriptorBufferInfo{}
+			.setBuffer( buffer )
+			.setOffset( offset )
+			.setRange( range );
+
+		return bufferInfo;
+    }
+
+
+    vk::DescriptorImageInfo GetDescriptorImageInfo( vk::ImageView imageView, vk::Sampler sampler, vk::ImageLayout layout) {
+
+        auto imageInfo = vk::DescriptorImageInfo{}
+			.setImageView( imageView )
+			.setImageLayout( layout )
+			.setSampler( sampler );
+
+		return imageInfo;
     }
 
 
