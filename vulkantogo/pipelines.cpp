@@ -43,29 +43,31 @@ namespace vktg
     }
 
     
-    void ComputePipelineBuilder::SetShader( vk::ShaderModule shaderModule, std::string_view entryPointName) {
+    ComputePipelineBuilder& ComputePipelineBuilder::SetShader( vk::ShaderModule shaderModule, std::string_view entryPointName) {
 
         shaderInfo
             .setModule( shaderModule )
             .setPName( entryPointName.data() );
+
+        return *this;
     }
 
 
-    uint32_t ComputePipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout) {
+    ComputePipelineBuilder& ComputePipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout) {
     
         uint32_t idx = descriptorLayouts.size();
         descriptorLayouts.push_back( descriptorLayout);
 
-        return idx;
+        return *this;
     }
 
     
-    uint32_t ComputePipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
+    ComputePipelineBuilder& ComputePipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
     
         uint32_t idx = pushConstants.size();
         pushConstants.push_back( pushConstant);
 
-        return idx;
+        return *this;
     }
 
 

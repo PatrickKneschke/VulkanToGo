@@ -179,13 +179,17 @@ namespace vktg
     }
 
 
-    vk::DescriptorSet DescriptorSetBuilder::Build() {
+    vk::DescriptorSet DescriptorSetBuilder::Build( vk::DescriptorSetLayout *pLayout) {
 
         auto layoutCreateInfo = vk::DescriptorSetLayoutCreateInfo{}
             .setBindingCount( (uint32_t)mBindings.size())
             .setPBindings( mBindings.data());
 
         vk::DescriptorSetLayout layout = pLayoutCache->CreateLayout( &layoutCreateInfo);
+        if (pLayout != nullptr)
+        {
+            *pLayout = layout;
+        }
 
         vk::DescriptorSet descriptorSet = pAllocator->Allocate( layout);
         for (auto &write : mWrites) 

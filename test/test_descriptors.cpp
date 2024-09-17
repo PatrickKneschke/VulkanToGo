@@ -2,6 +2,7 @@
 #include <catch2/catch.hpp>
 
 #include "../vulkantogo/descriptors.h"
+#include "../vulkantogo/samplers.h"
 #include "../vulkantogo/storage.h"
 
 #include <vector>
@@ -132,16 +133,17 @@ TEST_CASE( "descriptor set builder", "[descriptors]") {
 
     vktg::DescriptorLayoutCache layoutCache;
     vktg::DescriptorSetAllocator setAllocator;
+    vk::Sampler sampler = vktg::SamplerBuilder().Build();
 
     vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer);
     vk::DescriptorBufferInfo bufferInfo = vktg::GetDescriptorBufferInfo( buffer.buffer, 128, 64);
 
-    vktg::Image image = vktg::CreateImage( 256, 256, vk::Format::eR32G32B32A32Sfloat, vk::ImageUsageFlagBits::eStorage);
-    vk::DescriptorImageInfo imageInfo = vktg::GetDescriptorImageInfo( image.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
+    vktg::Image image = vktg::CreateImage( 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eSampled);
+    vk::DescriptorImageInfo imageInfo = vktg::GetDescriptorImageInfo( image.imageView, sampler, vk::ImageLayout::eShaderReadOnlyOptimal);
 
     vk::DescriptorSet descriptorSet = vktg::DescriptorSetBuilder( &setAllocator, &layoutCache)
         .BindBuffer( 0, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, &bufferInfo)
-        .BindImage( 1, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eFragment, &imageInfo)
+        .BindImage( 1, vk::DescriptorType::eSampledImage, vk::ShaderStageFlagBits::eFragment, &imageInfo)
         .Build();
 
     REQUIRE_FALSE( !descriptorSet );

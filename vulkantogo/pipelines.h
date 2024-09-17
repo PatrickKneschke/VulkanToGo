@@ -45,9 +45,9 @@ namespace vktg
         void Reset() override;
         Pipeline Build() override;
 
-        void SetShader( vk::ShaderModule shaderModule, std::string_view entryPointName = "main");
-        uint32_t AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
-        uint32_t AddPushConstant( vk::PushConstantRange pushConstant);
+        ComputePipelineBuilder& SetShader( vk::ShaderModule shaderModule, std::string_view entryPointName = "main");
+        ComputePipelineBuilder& AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
+        ComputePipelineBuilder& AddPushConstant( vk::PushConstantRange pushConstant);
     };
 
 

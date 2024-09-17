@@ -60,7 +60,7 @@ namespace vktg
             DescriptorSetBuilder& BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorBufferInfo* bufferInfo);
             DescriptorSetBuilder& BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorImageInfo* imageInfo);
 
-            vk::DescriptorSet Build();
+            vk::DescriptorSet Build( vk::DescriptorSetLayout *pLayout = nullptr);
 
         private:
 
