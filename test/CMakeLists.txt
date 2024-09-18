@@ -9,6 +9,7 @@ add_executable( test_all
     test_pipelines.cpp 
     test_descriptors.cpp 
     test_samplers.cpp 
+    test_rendering.cpp 
 )
 
 target_include_directories( test_all 

@@ -6,6 +6,7 @@
 #include "deletion_stack.h"
 #include "descriptors.h"
 #include "pipelines.h"
+#include "rendering.h" 
 #include "samplers.h"
 #include "storage.h"
 #include "swapchain.h"

@@ -69,14 +69,12 @@ TEST_CASE( "build compute pipeline", "[pipelines]") {
         .setOffset( 0 )
         .setSize( 64 );
 
-
-    builder.SetShader( shader, "main");
-    uint32_t setIdx = builder.AddDescriptorLayout( setLayout);
-    uint32_t pcIdx = builder.AddPushConstant( pushConstant);
+    builder
+        .SetShader( shader, "main")
+        .AddDescriptorLayout( setLayout)
+        .AddPushConstant( pushConstant);
     vktg::Pipeline pipeline = builder.Build();
 
-    REQUIRE( setIdx == 0 );
-    REQUIRE( pcIdx == 0 );
     REQUIRE( pipeline.type == vktg::Pipeline::Type::eCompute );
     REQUIRE_FALSE( !pipeline.pipelineLayout );
     REQUIRE_FALSE( !pipeline.pipeline );

@@ -70,55 +70,75 @@ int main() {
         .Build();
 
 
-    // synchronization objects
-    vk::Fence renderFence = vktg::CreateFence();
-    vk::Semaphore renderSemaphore = vktg::CreateSemaphore();
-    vk::Semaphore presentSemaphore = vktg::CreateSemaphore();
+    // frame resources
+    uint64_t frameCount = 0;
+    const uint8_t frameOverlap = 2;
+    struct FrameResources {
+        vk::Fence renderFence;
+        vk::Semaphore renderSemaphore;
+        vk::Semaphore presentSemaphore;
+        vk::CommandPool commandPool;
+        vk::CommandBuffer commandbuffer;
+    } frameResources[frameOverlap];
 
-    deletionStack.Push( [=](){
-        vktg::DestroyFence( renderFence);
-        vktg::DestroySemaphore( renderSemaphore);
-        vktg::DestroySemaphore( presentSemaphore);
-    });
+    for (auto &frame : frameResources)
+    {
+        // synchronization objects
+        frame.renderFence = vktg::CreateFence();
+        frame.renderSemaphore = vktg::CreateSemaphore();
+        frame.presentSemaphore = vktg::CreateSemaphore();
 
-    
-    // command pool and command buffer
-    vk::CommandPool graphicsCmdPool = vktg::CreateCommandPool( vktg::GraphicsQueueIndex());
-    deletionStack.Push( [=](){
-        vktg::DestroyCommandPool( graphicsCmdPool);
-    });
-    vk::CommandBuffer cmd = vktg::AllocateCommandBuffer( graphicsCmdPool);
+        deletionStack.Push( [=](){
+            vktg::DestroyFence( frame.renderFence);
+            vktg::DestroySemaphore( frame.renderSemaphore);
+            vktg::DestroySemaphore( frame.presentSemaphore);
+        });
+        
+        // command pools and command buffers
+        frame.commandPool = vktg::CreateCommandPool( vktg::GraphicsQueueIndex());
+        deletionStack.Push( [=](){
+            vktg::DestroyCommandPool( frame.commandPool);
+        });
+        vk::CommandBuffer cmd = vktg::AllocateCommandBuffer( frame.commandPool);
+    }
 
 
     // render loop
     while (!glfwWindowShouldClose( vktg::Window())) 
     {
-        // recreate swapchain if outdated
+        // recreate swapchain adn render image if outdated
         if (!swapchain.isValid)
         {
             vktg::CreateSwapchain( swapchain);
+            vktg::DestroyImage( renderImage);
+            vktg::Image renderImage = vktg::CreateImage(
+                swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
+                vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
+            );
         }
 
-        // wait for render fence to record render commands
-        VK_CHECK( vktg::Device().waitForFences( renderFence, true, 1e9) );
-        VK_CHECK( vktg::Device().resetFences( 1, &renderFence) );
+        // get current frame
+        auto &frame = frameResources[frameCount % frameOverlap];
 
+        // wait for render fence to record render commands
+        VK_CHECK( vktg::Device().waitForFences( frame.renderFence, true, 1e9) );
+        VK_CHECK( vktg::Device().resetFences( 1, &frame.renderFence) );
 
         // get next swapchain image
         uint32_t imageIndex;
-        if (vktg::NextSwapchainImage( swapchain, renderSemaphore, &imageIndex))
+        if (vktg::NextSwapchainImage( swapchain, frame.renderSemaphore, &imageIndex))
         {
             continue;
         }
 
-
         // record render commands
+        auto cmd = frame.commandbuffer;
         cmd.reset( vk::CommandBufferResetFlagBits::eReleaseResources);
         auto commandBeginInfo = vk::CommandBufferBeginInfo{}
             .setFlags( vk::CommandBufferUsageFlagBits::eOneTimeSubmit );
         VK_CHECK( cmd.begin( &commandBeginInfo) );
 
-
+            
 
         cmd.end();
 
@@ -126,15 +146,17 @@ int main() {
         vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
         auto submitInfo = vk::SubmitInfo{}
             .setWaitSemaphoreCount( 1 )
-            .setPWaitSemaphores( &renderSemaphore )
+            .setPWaitSemaphores( &frame.renderSemaphore )
             .setPWaitDstStageMask( &waitStage )
             .setCommandBufferCount( 1 )
             .setPCommandBuffers( &cmd )
             .setSignalSemaphoreCount( 1 )
-            .setPSignalSemaphores( &presentSemaphore );		
-        VK_CHECK( vktg::GraphicsQueue().submit( 1, &submitInfo, renderFence) );
+            .setPSignalSemaphores( &frame.presentSemaphore );		
+        VK_CHECK( vktg::GraphicsQueue().submit( 1, &submitInfo, frame.renderFence) );
 
-        vktg::PresentImage( swapchain, &presentSemaphore, &imageIndex);
+        vktg::PresentImage( swapchain, &frame.presentSemaphore, &imageIndex);
+
+        ++frameCount;
     }
 
 

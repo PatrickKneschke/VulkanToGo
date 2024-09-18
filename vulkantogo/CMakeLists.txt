@@ -17,6 +17,7 @@ target_sources( vktg PRIVATE
     pipelines.h 
     descriptors.h 
     samplers.h 
+    rendering.h 
 
     vk_core.cpp 
     storage.cpp 
@@ -26,6 +27,7 @@ target_sources( vktg PRIVATE
     pipelines.cpp 
     descriptors.cpp
     samplers.cpp
+    rendering.cpp 
 )
 
 target_link_libraries( vktg
