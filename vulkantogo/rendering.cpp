@@ -42,4 +42,26 @@ namespace vktg
     }
 
 
+    void TransitionImageLayout(vk::CommandBuffer cmd, vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::AccessFlagBits2 srcAccessMask, vk::AccessFlagBits2 dstAccessMask, vk::PipelineStageFlagBits2 srcStage, vk::PipelineStageFlagBits2 dststage, vk::ImageSubresourceRange subResource) {
+
+        auto barrier = vk::ImageMemoryBarrier2{}
+            .setImage( image )
+            .setOldLayout( oldLayout ) 
+            .setNewLayout( newLayout )
+            .setSrcAccessMask( srcAccessMask )
+            .setDstAccessMask( dstAccessMask )
+            .setSrcStageMask( srcStage )
+            .setDstStageMask( dststage )
+            .setSubresourceRange( subResource )
+            .setSrcQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED )
+            .setDstQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED );
+
+        auto dependencyInfo = vk::DependencyInfo{}
+            .setImageMemoryBarrierCount( 1 )
+            .setPImageMemoryBarriers( &barrier );
+
+        cmd.pipelineBarrier2( &dependencyInfo);
+    }
+
+
 } // namespace vktg
