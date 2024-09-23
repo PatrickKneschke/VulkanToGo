@@ -18,7 +18,10 @@ namespace vktg
         vma::AllocationInfo allocationInfo;        
     };
 
-    Buffer CreateBuffer( size_t bufferSize, vk::BufferUsageFlags bufferUsage, vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{});
+    Buffer CreateBuffer(
+         size_t bufferSize, vk::BufferUsageFlags bufferUsage, 
+         vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{}
+    );
 
     void DestroyBuffer( const Buffer &buffer);
 
@@ -31,6 +34,7 @@ namespace vktg
 
         const vma::MemoryUsage memoryUsage;
         vma::Allocation allocation;
+        vma::AllocationInfo allocationInfo;
     };
 
     Image CreateImage(

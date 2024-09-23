@@ -6,7 +6,7 @@ namespace vktg
 {
 
 
-    vk::Fence CreateFence( vk::FenceCreateFlagBits flags) {
+    vk::Fence CreateFence( vk::FenceCreateFlags flags) {
 
         auto fenceInfo = vk::FenceCreateInfo{}
             .setFlags( flags);

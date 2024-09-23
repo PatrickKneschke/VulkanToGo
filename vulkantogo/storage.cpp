@@ -70,7 +70,7 @@ namespace vktg
             .setUsage( newImage.memoryUsage )
             .setFlags( flags );
     
-        VK_CHECK( Allocator().createImage( &newImage.imageInfo, &allocInfo, &newImage.image, &newImage.allocation, nullptr) );
+        VK_CHECK( Allocator().createImage( &newImage.imageInfo, &allocInfo, &newImage.image, &newImage.allocation, &newImage.allocationInfo) );
         newImage.imageView = CreateImageView( 
             newImage.image, newImage.imageInfo.format, newImage.imageAspect, 
             0, newImage.imageInfo.mipLevels, 0, newImage.imageInfo.arrayLayers

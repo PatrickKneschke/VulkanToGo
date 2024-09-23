@@ -10,6 +10,7 @@ add_executable( test_all
     test_descriptors.cpp 
     test_samplers.cpp 
     test_rendering.cpp 
+    test_transfer.cpp 
 )
 
 target_include_directories( test_all 

@@ -18,6 +18,7 @@ target_sources( vktg PRIVATE
     descriptors.h 
     samplers.h 
     rendering.h 
+    transfer.h 
 
     vk_core.cpp 
     storage.cpp 
@@ -28,6 +29,7 @@ target_sources( vktg PRIVATE
     descriptors.cpp
     samplers.cpp
     rendering.cpp 
+    transfer.cpp 
 )
 
 target_link_libraries( vktg

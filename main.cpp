@@ -39,18 +39,19 @@ int main() {
         descriptorsetAllocator.DestroyPools();
     });
 
-
     // pipelines
-    vk::ShaderModule computeShader = vktg::LoadShader( "res/shaders/gradient_comp.spv");
+    vk::ShaderModule computeShader = vktg::LoadShader( "../res/shaders/gradient_comp.spv");
     auto edgeColors = vk::PushConstantRange{}
         .setStageFlags( vk::ShaderStageFlagBits::eCompute )
         .setOffset( 0 )
         .setSize( 4 * 4 * sizeof(float) );
+
     vk::DescriptorSetLayout computeLayout;
     vk::DescriptorImageInfo computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
     vk::DescriptorSet computeSet = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
         .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo)
         .Build( &computeLayout);
+
     vktg::Pipeline computePipeline = vktg::ComputePipelineBuilder()
         .SetShader( computeShader )
         .AddDescriptorLayout( computeLayout )
@@ -62,12 +63,12 @@ int main() {
         vktg::DestroyPipeline( computePipeline.pipeline);
     });
 
-    vk::ShaderModule vertexShader = vktg::LoadShader( "res/shaders/triangle_vert.spv");
-    vk::ShaderModule fragmentShader = vktg::LoadShader( "res/shaders/triangle_frag.spv");
-    vktg::Pipeline trianglePipeline = vktg::GraphicsPipelineBuilder()
-        .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex)
-        .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment)
-        .Build();
+    // vk::ShaderModule vertexShader = vktg::LoadShader( "../res/shaders/triangle_vert.spv");
+    // vk::ShaderModule fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
+    // vktg::Pipeline trianglePipeline = vktg::GraphicsPipelineBuilder()
+    //     .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex)
+    //     .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment)
+    //     .Build();
 
 
     // frame resources

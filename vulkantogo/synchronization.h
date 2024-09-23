@@ -8,7 +8,7 @@ namespace vktg
 {
 
 
-    vk::Fence CreateFence( vk::FenceCreateFlagBits flags = vk::FenceCreateFlagBits::eSignaled);
+    vk::Fence CreateFence( vk::FenceCreateFlags flags = vk::FenceCreateFlagBits::eSignaled);
     
     void DestroyFence( vk::Fence fence);
 
