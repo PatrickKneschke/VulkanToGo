@@ -18,7 +18,8 @@ TEST_CASE("unitialized buffer", "[storage]") {
 
 TEST_CASE("create buffer", "[storage]") {
 
-    vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
+    vktg::Buffer buffer;
+    vktg::CreateBuffer( buffer, 256, vk::BufferUsageFlagBits::eUniformBuffer, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
     
     REQUIRE_FALSE( !buffer.buffer);
     REQUIRE( buffer.bufferSize == 256);
@@ -31,8 +32,8 @@ TEST_CASE("create buffer", "[storage]") {
 
 TEST_CASE("create image", "[storage]") {
 
-    vktg::Image image = vktg::CreateImage( 
-        256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth, 8);
+    vktg::Image image;
+    vktg::CreateImage( image, 256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth, 8);
 
     REQUIRE_FALSE( !image.image);
     REQUIRE_FALSE( !image.imageView);

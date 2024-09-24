@@ -68,6 +68,7 @@ namespace vktg
     static vk::PhysicalDeviceVulkan13Features GetVulkan13DeviceFeatures() {
         
         auto features13 = vk::PhysicalDeviceVulkan13Features{}
+            .setSynchronization2( VK_TRUE )
             .setDynamicRendering( VK_TRUE );
 
         return features13;

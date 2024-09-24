@@ -2,6 +2,8 @@
 #include "swapchain.h"
 #include "storage.h"
 
+#include <iostream>
+
 
 namespace vktg
 {
@@ -128,6 +130,7 @@ namespace vktg
             result = Device().acquireNextImageKHR( swapchain.swapchain, UINT64_MAX, readySemaphore, nullptr, imageIndex);
         }
         catch (...)
+
         {
             if (result == vk::Result::eErrorOutOfDateKHR)
             {

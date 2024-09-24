@@ -9,8 +9,10 @@
 
 TEST_CASE( "copy buffer to buffer", "[transfer]") {
 
-    vktg::Buffer buffer1 = vktg::CreateBuffer( 16, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
-    vktg::Buffer buffer2 = vktg::CreateBuffer( 16, vk::BufferUsageFlagBits::eUniformBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
+    vktg::Buffer buffer1;
+    vktg::CreateBuffer( buffer1, 16, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
+    vktg::Buffer buffer2;
+    vktg::CreateBuffer( buffer2, 16, vk::BufferUsageFlagBits::eUniformBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
 
     float data[4] = {1.f, 2.f, 3.f, 4.f};
     float *ptr1 = reinterpret_cast<float*>( buffer1.allocationInfo.pMappedData);
@@ -54,8 +56,10 @@ TEST_CASE( "copy buffer to buffer", "[transfer]") {
 
 TEST_CASE( "copy buffer regions to buffer", "[transfer]") {
 
-    vktg::Buffer buffer1 = vktg::CreateBuffer( 16, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
-    vktg::Buffer buffer2 = vktg::CreateBuffer( 16, vk::BufferUsageFlagBits::eUniformBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
+    vktg::Buffer buffer1;
+    vktg::CreateBuffer( buffer1, 16, vk::BufferUsageFlagBits::eTransferSrc, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
+    vktg::Buffer buffer2;
+    vktg::CreateBuffer( buffer2, 16, vk::BufferUsageFlagBits::eUniformBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
 
     float *ptr1 = reinterpret_cast<float*>( buffer1.allocationInfo.pMappedData);
     for (int i=0; i<4; i++)

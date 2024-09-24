@@ -6,25 +6,21 @@ namespace vktg
 {
 
 
-    Buffer CreateBuffer( size_t bufferSize, vk::BufferUsageFlags bufferUsage, vma::MemoryUsage memoryUsage, vma::AllocationCreateFlags flags) {
+    void CreateBuffer( Buffer &buffer, size_t bufferSize, vk::BufferUsageFlags bufferUsage, vma::MemoryUsage memoryUsage, vma::AllocationCreateFlags flags) {
 
-        Buffer newBuffer{
-            .bufferUsage = bufferUsage,
-            .bufferSize = bufferSize,
-            .memoryUsage = memoryUsage
-        };
+        buffer.bufferUsage = bufferUsage;
+        buffer.bufferSize = bufferSize;
+        buffer.memoryUsage = memoryUsage;
 
         auto bufferInfo = vk::BufferCreateInfo{}
-            .setSize( newBuffer.bufferSize )
-            .setUsage( newBuffer.bufferUsage );
+            .setSize( buffer.bufferSize )
+            .setUsage( buffer.bufferUsage );
         
         auto allocInfo = vma::AllocationCreateInfo{}
-            .setUsage( newBuffer.memoryUsage )
+            .setUsage( buffer.memoryUsage )
             .setFlags( flags );
 
-        VK_CHECK( Allocator().createBuffer( &bufferInfo, &allocInfo, &newBuffer.buffer, &newBuffer.allocation, &newBuffer.allocationInfo) );
-
-        return newBuffer;
+        VK_CHECK( Allocator().createBuffer( &bufferInfo, &allocInfo, &buffer.buffer, &buffer.allocation, &buffer.allocationInfo) );
     }
 
 
@@ -39,7 +35,8 @@ namespace vktg
     }
 
 
-    Image CreateImage(
+    void CreateImage(
+        Image &image,
         uint32_t width, uint32_t height, 
         vk::Format format, vk::ImageUsageFlags usage, 
         vk::ImageAspectFlags imageAspect, 
@@ -48,35 +45,31 @@ namespace vktg
         vk::ImageTiling tiling, 
         vk::SharingMode sharingMode, uint32_t queueFamilyCount, const uint32_t *pQueueFamilies)
     {
-        Image newImage{
-            .imageAspect = imageAspect,
-            .imageInfo = vk::ImageCreateInfo{}
-                .setImageType( vk::ImageType::e2D )
-                .setExtent( vk::Extent3D{ width, height, 1} )
-                .setFormat( format )
-                .setUsage( usage )
-                .setMipLevels( mipLevels )
-                .setArrayLayers( layers )
-                .setTiling( tiling )
-                .setSamples( numSamples )
-                .setSharingMode( sharingMode )
-                .setQueueFamilyIndexCount( queueFamilyCount )
-                .setPQueueFamilyIndices( pQueueFamilies )
-                .setInitialLayout( vk::ImageLayout::eUndefined ),
-            .memoryUsage = memoryUsage,
-        };
+        image.imageAspect = imageAspect;
+        image.imageInfo = vk::ImageCreateInfo{}
+            .setImageType( vk::ImageType::e2D )
+            .setExtent( vk::Extent3D{ width, height, 1} )
+            .setFormat( format )
+            .setUsage( usage )
+            .setMipLevels( mipLevels )
+            .setArrayLayers( layers )
+            .setTiling( tiling )
+            .setSamples( numSamples )
+            .setSharingMode( sharingMode )
+            .setQueueFamilyIndexCount( queueFamilyCount )
+            .setPQueueFamilyIndices( pQueueFamilies )
+            .setInitialLayout( vk::ImageLayout::eUndefined );
+        image.memoryUsage = memoryUsage;
 
         auto allocInfo = vma::AllocationCreateInfo{}
-            .setUsage( newImage.memoryUsage )
+            .setUsage( image.memoryUsage )
             .setFlags( flags );
     
-        VK_CHECK( Allocator().createImage( &newImage.imageInfo, &allocInfo, &newImage.image, &newImage.allocation, &newImage.allocationInfo) );
-        newImage.imageView = CreateImageView( 
-            newImage.image, newImage.imageInfo.format, newImage.imageAspect, 
-            0, newImage.imageInfo.mipLevels, 0, newImage.imageInfo.arrayLayers
+        VK_CHECK( Allocator().createImage( &image.imageInfo, &allocInfo, &image.image, &image.allocation, &image.allocationInfo) );
+        image.imageView = CreateImageView( 
+            image.image, image.imageInfo.format, image.imageAspect, 
+            0, image.imageInfo.mipLevels, 0, image.imageInfo.arrayLayers
         );
-
-        return newImage;
     }
 
 

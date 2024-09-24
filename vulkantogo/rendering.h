@@ -25,8 +25,8 @@ namespace vktg
     void TransitionImageLayout( 
         vk::CommandBuffer cmd, vk::Image image, 
         vk::ImageLayout oldLayout, vk::ImageLayout newLayout,
-        vk::AccessFlagBits2 srcAccessMask, vk::AccessFlagBits2 dstAccessMask,
-        vk::PipelineStageFlagBits2 srcStage, vk::PipelineStageFlagBits2 dststage,
+        vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, 
+        vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask,
         vk::ImageSubresourceRange subResource = vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1} 
     );
 

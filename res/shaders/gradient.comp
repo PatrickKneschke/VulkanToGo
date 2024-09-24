@@ -11,7 +11,7 @@ layout( push_constant ) uniform PushConstants {
     vec4 tr;
     vec4 bl;
     vec4 br;
-} edgeColors;
+} cornerColors;
 
 
 void main()  {
@@ -19,10 +19,10 @@ void main()  {
     ivec2 texelCoord = ivec2( gl_GlobalInvocationID.xy);
 	ivec2 size = imageSize( image);
 
-    vec4 topLeft = edgeColors.tl;
-    vec4 topRight = edgeColors.tr;
-    vec4 bottomLeft = edgeColors.bl;
-    vec4 bottomRight = edgeColors.br;
+    vec4 topLeft = cornerColors.tl;
+    vec4 topRight = cornerColors.tr;
+    vec4 bottomLeft = cornerColors.bl;
+    vec4 bottomRight = cornerColors.br;
 
     if (texelCoord.x < size.x && texelCoord.y < size.y)
     {

@@ -7,7 +7,8 @@
 
 TEST_CASE( "create rendering atachment info with default parameters", "[rendering]") {
 
-    vktg::Image image = vktg::CreateImage( 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eColorAttachment);
+    vktg::Image image;
+    vktg::CreateImage( image, 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eColorAttachment);
     vk::RenderingAttachmentInfo attachment = vktg::CreateRenderingAttachment( image.imageView);
 
     REQUIRE( attachment.imageView == image.imageView );
@@ -20,7 +21,8 @@ TEST_CASE( "create rendering atachment info with default parameters", "[renderin
 
 TEST_CASE( "create rendering atachment info with clear color", "[rendering]") {
 
-    vktg::Image image = vktg::CreateImage( 256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth);
+    vktg::Image image;
+    vktg::CreateImage( image, 256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth);
     vk::ClearValue clearValue = vk::ClearValue{}.setDepthStencil( {1.0f, 0} ); 
     vk::RenderingAttachmentInfo attachment = vktg::CreateRenderingAttachment( image.imageView, &clearValue, vk::ImageLayout::eDepthAttachmentOptimal);
 
@@ -34,9 +36,12 @@ TEST_CASE( "create rendering atachment info with clear color", "[rendering]") {
 
 TEST_CASE( "create rendering info", "[rendering]") {
 
-    vktg::Image colorImage1 = vktg::CreateImage( 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eColorAttachment);
-    vktg::Image colorImage2 = vktg::CreateImage( 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eColorAttachment);
-    vktg::Image depthImage = vktg::CreateImage( 256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth);
+    vktg::Image colorImage1;
+    vktg::CreateImage( colorImage1, 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eColorAttachment);
+    vktg::Image colorImage2;
+    vktg::CreateImage( colorImage2, 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eColorAttachment);
+    vktg::Image depthImage;
+    vktg::CreateImage( depthImage, 256, 256, vk::Format::eD32Sfloat, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth);
 
     vk::RenderingAttachmentInfo colorAttachments[2] = {
         vktg::CreateRenderingAttachment( colorImage1.imageView),

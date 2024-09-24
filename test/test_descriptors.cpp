@@ -120,7 +120,8 @@ TEST_CASE( "descriptor allocator", "[descriptors]") {
 
 TEST_CASE( "get descriptor buffer info", "[descriptors]") {
 
-    vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer);
+    vktg::Buffer buffer;
+    vktg::CreateBuffer( buffer, 256, vk::BufferUsageFlagBits::eUniformBuffer);
     vk::DescriptorBufferInfo bufferInfo = vktg::GetDescriptorBufferInfo( buffer.buffer, 128, 64);
 
     REQUIRE_FALSE( !bufferInfo.buffer );
@@ -135,10 +136,12 @@ TEST_CASE( "descriptor set builder", "[descriptors]") {
     vktg::DescriptorSetAllocator setAllocator;
     vk::Sampler sampler = vktg::SamplerBuilder().Build();
 
-    vktg::Buffer buffer = vktg::CreateBuffer( 256, vk::BufferUsageFlagBits::eUniformBuffer);
+    vktg::Buffer buffer;
+    vktg::CreateBuffer( buffer, 256, vk::BufferUsageFlagBits::eUniformBuffer);
     vk::DescriptorBufferInfo bufferInfo = vktg::GetDescriptorBufferInfo( buffer.buffer, 128, 64);
 
-    vktg::Image image = vktg::CreateImage( 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eSampled);
+    vktg::Image image;
+    vktg::CreateImage( image, 256, 256, vk::Format::eR8G8B8A8Srgb, vk::ImageUsageFlagBits::eSampled);
     vk::DescriptorImageInfo imageInfo = vktg::GetDescriptorImageInfo( image.imageView, sampler, vk::ImageLayout::eShaderReadOnlyOptimal);
 
     vk::DescriptorSet descriptorSet = vktg::DescriptorSetBuilder( &setAllocator, &layoutCache)

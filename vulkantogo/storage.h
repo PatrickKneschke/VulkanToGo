@@ -10,17 +10,18 @@ namespace vktg
 
     struct Buffer {
         vk::Buffer buffer;
-        const vk::BufferUsageFlags bufferUsage = vk::BufferUsageFlags{};
-        const size_t bufferSize = 0;
+        vk::BufferUsageFlags bufferUsage = vk::BufferUsageFlags{};
+        size_t bufferSize = 0;
 
-        const vma::MemoryUsage memoryUsage = vma::MemoryUsage::eUnknown;
+        vma::MemoryUsage memoryUsage = vma::MemoryUsage::eUnknown;
         vma::Allocation allocation;
         vma::AllocationInfo allocationInfo;        
     };
 
-    Buffer CreateBuffer(
-         size_t bufferSize, vk::BufferUsageFlags bufferUsage, 
-         vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{}
+    void CreateBuffer(
+        Buffer &buffer,
+        size_t bufferSize, vk::BufferUsageFlags bufferUsage, 
+        vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{}
     );
 
     void DestroyBuffer( const Buffer &buffer);
@@ -29,15 +30,16 @@ namespace vktg
     struct Image {
         vk::Image image;
         vk::ImageView imageView;
-        const vk::ImageAspectFlags imageAspect;
-        const vk::ImageCreateInfo imageInfo;
+        vk::ImageAspectFlags imageAspect;
+        vk::ImageCreateInfo imageInfo;
 
-        const vma::MemoryUsage memoryUsage;
+        vma::MemoryUsage memoryUsage;
         vma::Allocation allocation;
         vma::AllocationInfo allocationInfo;
     };
 
-    Image CreateImage(
+    void CreateImage(
+        Image &image,
         uint32_t width, uint32_t height,
         vk::Format format, vk::ImageUsageFlags usage, 
         vk::ImageAspectFlags imageAspect = vk::ImageAspectFlagBits::eColor,
