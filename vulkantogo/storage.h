@@ -36,6 +36,10 @@ namespace vktg
         vma::MemoryUsage memoryUsage;
         vma::Allocation allocation;
         vma::AllocationInfo allocationInfo;
+
+        uint32_t Width() { return imageInfo.extent.width; }
+        uint32_t Height() { return imageInfo.extent.height; }
+        vk::Format Format() { return imageInfo.format; }
     };
 
     void CreateImage(

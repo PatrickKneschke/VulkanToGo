@@ -3,6 +3,8 @@
 
 #include "vk_core.h"
 
+#include <span>
+
 
 namespace vktg 
 {
@@ -19,6 +21,15 @@ namespace vktg
     vk::CommandBuffer AllocateCommandBuffer(
         vk::CommandPool commandPool,
         vk::CommandBufferLevel level = vk::CommandBufferLevel::ePrimary
+    );
+
+
+    void SubmitCommands( 
+        vk::Queue queue, 
+        std::span<vk::CommandBufferSubmitInfo> commandBuffers,
+        std::span<vk::SemaphoreSubmitInfo> waitSemaphores, 
+        std::span<vk::SemaphoreSubmitInfo> signalSemaphores,
+        vk::Fence fence
     );
 
     

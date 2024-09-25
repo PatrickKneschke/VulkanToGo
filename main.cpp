@@ -42,7 +42,8 @@ int main() {
         descriptorsetAllocator.DestroyPools();
     });
 
-    // pipelines
+
+    // compute pipeline
     vk::ShaderModule computeShader = vktg::LoadShader( "../res/shaders/gradient_comp.spv");
     auto computePush = vk::PushConstantRange{}
         .setStageFlags( vk::ShaderStageFlagBits::eCompute )
@@ -66,6 +67,7 @@ int main() {
         vktg::DestroyPipeline( computePipeline.pipeline);
     });
 
+    // graphics pipeline
     vk::ShaderModule vertexShader = vktg::LoadShader( "../res/shaders/triangle_vert.spv");
     vk::ShaderModule fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
     std::vector<vk::Format> colorattachmentFormats = {renderImage.imageInfo.format};
@@ -101,25 +103,25 @@ int main() {
         vk::CommandBuffer commandbuffer;
     } frameResources[frameOverlap];
 
-    for (int i=0; i<frameOverlap; i++)
+    for (auto &frame : frameResources)
     {
         // synchronization objects
-        frameResources[i].renderFence = vktg::CreateFence();
-        frameResources[i].renderSemaphore = vktg::CreateSemaphore();
-        frameResources[i].presentSemaphore = vktg::CreateSemaphore();
+        frame.renderFence = vktg::CreateFence();
+        frame.renderSemaphore = vktg::CreateSemaphore();
+        frame.presentSemaphore = vktg::CreateSemaphore();
 
         deletionStack.Push( [=](){
-            vktg::DestroyFence( frameResources[i].renderFence);
-            vktg::DestroySemaphore( frameResources[i].renderSemaphore);
-            vktg::DestroySemaphore( frameResources[i].presentSemaphore);
+            vktg::DestroyFence( frame.renderFence);
+            vktg::DestroySemaphore( frame.renderSemaphore);
+            vktg::DestroySemaphore( frame.presentSemaphore);
         });
         
         // command pools and command buffers
-        frameResources[i].commandPool = vktg::CreateCommandPool( vktg::GraphicsQueueIndex());
+        frame.commandPool = vktg::CreateCommandPool( vktg::GraphicsQueueIndex());
         deletionStack.Push( [=](){
-            vktg::DestroyCommandPool( frameResources[i].commandPool);
+            vktg::DestroyCommandPool( frame.commandPool);
         });
-        frameResources[i].commandbuffer = vktg::AllocateCommandBuffer( frameResources[i].commandPool);
+        frame.commandbuffer = vktg::AllocateCommandBuffer( frame.commandPool);
     }
 
 
@@ -193,7 +195,7 @@ int main() {
             cmd.bindPipeline( vk::PipelineBindPoint::eCompute, computePipeline.pipeline);
             cmd.bindDescriptorSets( vk::PipelineBindPoint::eCompute, computePipeline.pipelineLayout, 0, 1, &computeSet, 0, nullptr);
             cmd.pushConstants( computePipeline.pipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, sizeof(ShaderPushConstants), &cornerColors);
-            cmd.dispatch( std::ceil(renderImage.imageInfo.extent.width / 16), std::ceil(renderImage.imageInfo.extent.height / 16), 1);
+            cmd.dispatch( std::ceil(renderImage.Width() / 16), std::ceil(renderImage.Height() / 16), 1);
 
             // geometry draw
             vktg::TransitionImageLayout( 
@@ -212,15 +214,15 @@ int main() {
                 auto viewport = vk::Viewport{}
                     .setX( 0 )
                     .setY( 0 )
-                    .setWidth( renderImage.imageInfo.extent.width )
-                    .setHeight( renderImage.imageInfo.extent.height )
+                    .setWidth( renderImage.Width() )
+                    .setHeight( renderImage.Height() )
                     .setMinDepth( 0.f )
                     .setMaxDepth( 1.f );
                 cmd.setViewport( 0, 1, &viewport);
 
                 auto scissor = vk::Rect2D{}
                     .setOffset( vk::Offset2D{0, 0})
-                    .setExtent( {renderImage.imageInfo.extent.width, renderImage.imageInfo.extent.height}  );
+                    .setExtent( {renderImage.Width(), renderImage.Height()}  );
                 cmd.setScissor( 0, 1, &scissor);
 
                 cmd.draw( 3, 1, 0, 0);
@@ -241,7 +243,7 @@ int main() {
             );
             vktg::CopyImage( 
                 cmd, renderImage.image, swapchain.images[imageIndex],
-                vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{renderImage.imageInfo.extent.width, renderImage.imageInfo.extent.height}},
+                vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{renderImage.Width(), renderImage.Height()}},
                 vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{swapchain.extent.width, swapchain.extent.height}}
             );
 
@@ -255,16 +257,20 @@ int main() {
         cmd.end();
 
 
-        vk::PipelineStageFlags waitStage = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-        auto submitInfo = vk::SubmitInfo{}
-            .setWaitSemaphoreCount( 1 )
-            .setPWaitSemaphores( &frame.renderSemaphore )
-            .setPWaitDstStageMask( &waitStage )
-            .setCommandBufferCount( 1 )
-            .setPCommandBuffers( &cmd )
-            .setSignalSemaphoreCount( 1 )
-            .setPSignalSemaphores( &frame.presentSemaphore );		
-        VK_CHECK( vktg::GraphicsQueue().submit( 1, &submitInfo, frame.renderFence) );
+        vk::CommandBufferSubmitInfo cmdInfos[] = {
+            vk::CommandBufferSubmitInfo{}
+                .setCommandBuffer( cmd )
+        };
+        vk::SemaphoreSubmitInfo waitInfos[] = {
+            vk::SemaphoreSubmitInfo{}
+                .setSemaphore( frame.renderSemaphore )
+                .setStageMask( vk::PipelineStageFlagBits2::eColorAttachmentOutput )
+        };
+        vk::SemaphoreSubmitInfo signalInfos[] = {
+            vk::SemaphoreSubmitInfo{}
+                .setSemaphore( frame.presentSemaphore )
+        };
+        vktg::SubmitCommands( vktg::GraphicsQueue(), cmdInfos, waitInfos, signalInfos, frame.renderFence);
 
         vktg::PresentImage( swapchain, &frame.presentSemaphore, &imageIndex);
 
