@@ -211,18 +211,9 @@ int main() {
                 cmd.bindPipeline( vk::PipelineBindPoint::eGraphics, trianglePipeline.pipeline);
                 
                 //set dynamic viewport and scissor
-                auto viewport = vk::Viewport{}
-                    .setX( 0 )
-                    .setY( 0 )
-                    .setWidth( renderImage.Width() )
-                    .setHeight( renderImage.Height() )
-                    .setMinDepth( 0.f )
-                    .setMaxDepth( 1.f );
+                vk::Viewport viewport = vktg::CreateViewport( 0.f, 0.f, renderImage.Width(), renderImage.Height(), 0.f, 1.f);
+                vk::Rect2D scissor = vktg::CreateScissor( 0.f, 0.f, renderImage.Width(), renderImage.Height());
                 cmd.setViewport( 0, 1, &viewport);
-
-                auto scissor = vk::Rect2D{}
-                    .setOffset( vk::Offset2D{0, 0})
-                    .setExtent( {renderImage.Width(), renderImage.Height()}  );
                 cmd.setScissor( 0, 1, &scissor);
 
                 cmd.draw( 3, 1, 0, 0);

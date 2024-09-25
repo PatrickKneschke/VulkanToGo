@@ -457,4 +457,26 @@ namespace vktg
     }
 
 
+    vk::Viewport CreateViewport( float x, float y, float width, float height, float minDepth, float maxDepth) {
+        
+        auto viewport = vk::Viewport{}
+            .setX( x )
+            .setY( y )
+            .setWidth( width )
+            .setHeight( height )
+            .setMinDepth( minDepth )
+            .setMaxDepth( maxDepth );
+
+        return viewport;
+    }
+
+    vk::Rect2D CreateScissor(float x, float y, float width, float height) {
+        
+        auto scissor = vk::Rect2D{}
+            .setOffset( vk::Offset2D{x, y})
+            .setExtent( {width, height} );
+    
+        return scissor;
+    }
+
 } // namespace vktg

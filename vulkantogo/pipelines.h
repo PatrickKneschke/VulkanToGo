@@ -125,4 +125,9 @@ namespace vktg
     void DestroyShaderModule( vk::ShaderModule shaderModule);
 
 
+    vk::Viewport CreateViewport( float x, float y, float width, float height, float minDepth, float maxDepth);
+
+    vk::Rect2D CreateScissor( float x, float y, float width, float height);
+
+
 } // namespace vktg
