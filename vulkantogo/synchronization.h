@@ -17,5 +17,8 @@ namespace vktg
     
     void DestroySemaphore( vk::Semaphore semaphore);
 
+
+    
+
     
 } // namespace vktg

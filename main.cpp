@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 
 int main() {
@@ -45,16 +46,29 @@ int main() {
 
     // compute pipeline
     vk::ShaderModule computeShader = vktg::LoadShader( "../res/shaders/gradient_comp.spv");
+
+    struct ShaderPushConstants {
+        float tl[4];
+        float tr[4];
+        float bl[4];
+        float br[4];
+    } cornerColors {
+        .tl = {1.f, 0.f, 0.f, 1.f},
+        .tr = {0.f, 1.f, 0.f, 1.f},
+        .bl = {0.f, 0.f, 1.f, 1.f},
+        .br = {0.5f, 0.5f, 0.5f, 1.f}
+    };
+
     auto computePush = vk::PushConstantRange{}
         .setStageFlags( vk::ShaderStageFlagBits::eCompute )
         .setOffset( 0 )
-        .setSize( 4 * 4 * sizeof(float) );
+        .setSize( sizeof(ShaderPushConstants) );
 
     vk::DescriptorSetLayout computeLayout;
     vk::DescriptorImageInfo computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
     vk::DescriptorSet computeSet = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
-        .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo)
-        .Build( &computeLayout);
+        .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo )
+        .Build( &computeLayout );
 
     vktg::Pipeline computePipeline = vktg::ComputePipelineBuilder()
         .SetShader( computeShader )
@@ -72,8 +86,8 @@ int main() {
     vk::ShaderModule fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
     std::vector<vk::Format> colorattachmentFormats = {renderImage.imageInfo.format};
     vktg::Pipeline trianglePipeline = vktg::GraphicsPipelineBuilder()
-        .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex)
-        .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment)
+        .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex )
+        .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment )
         .SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor} )
         .SetInputAssembly( vk::PrimitiveTopology::eTriangleList )
         .SetPolygonMode( vk::PolygonMode::eFill )
@@ -86,7 +100,7 @@ int main() {
         vktg::DestroyPipeline( trianglePipeline.pipeline);
     });
 
-    // cleanup shader modules, no longer needed
+    // cleanup shader modules immediately, no longer needed
     vktg::DestroyShaderModule( computeShader);
     vktg::DestroyShaderModule( vertexShader);
     vktg::DestroyShaderModule( fragmentShader);
@@ -109,7 +123,6 @@ int main() {
         frame.renderFence = vktg::CreateFence();
         frame.renderSemaphore = vktg::CreateSemaphore();
         frame.presentSemaphore = vktg::CreateSemaphore();
-
         deletionStack.Push( [=](){
             vktg::DestroyFence( frame.renderFence);
             vktg::DestroySemaphore( frame.renderSemaphore);
@@ -123,19 +136,6 @@ int main() {
         });
         frame.commandbuffer = vktg::AllocateCommandBuffer( frame.commandPool);
     }
-
-
-    struct ShaderPushConstants {
-        float tl[4];
-        float tr[4];
-        float bl[4];
-        float br[4];
-    } cornerColors {
-        .tl = {1.f, 0.f, 0.f, 1.f},
-        .tr = {0.f, 1.f, 0.f, 1.f},
-        .bl = {0.f, 0.f, 1.f, 1.f},
-        .br = {0.5f, 0.5f, 0.5f, 1.f}
-    };
 
 
     // render loop

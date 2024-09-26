@@ -70,7 +70,7 @@ TEST_CASE( "build compute pipeline", "[pipelines]") {
         .setSize( 64 );
 
     builder
-        .SetShader( shader, "main")
+        .SetShader( shader,  nullptr, "main")
         .AddDescriptorLayout( setLayout)
         .AddPushConstant( pushConstant);
     vktg::Pipeline pipeline = builder.Build();
@@ -106,8 +106,8 @@ TEST_CASE( "add shaders to graphics pipeline bulder", "[pipelines]") {
     vk::ShaderModule fragShader = vktg::LoadShader( "../res/shaders/test_frag.spv");
 
     builder
-        .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, "main")
-        .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, "main");
+        .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, nullptr, "main")
+        .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, nullptr, "main");
 
     REQUIRE( builder.shaderInfos[0].stage == vk::ShaderStageFlagBits::eVertex );
     REQUIRE( builder.shaderInfos[1].stage == vk::ShaderStageFlagBits::eFragment );
@@ -331,8 +331,8 @@ TEST_CASE( "create graphics pipeline", "[pipelines]") {
     std::vector<vk::Format> colorAttachmentFormats = {vk::Format::eR16G16B16A16Sfloat};
 
     vktg::Pipeline pipeline = builder
-        .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, "main")
-        .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, "main")    
+        .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, nullptr, "main")
+        .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, nullptr, "main")    
         .SetInputAssembly( vk::PrimitiveTopology::eTriangleList)
         .SetPolygonMode( vk::PolygonMode::eFill )
         .SetCulling( vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise )

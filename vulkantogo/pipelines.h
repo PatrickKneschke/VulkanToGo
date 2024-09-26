@@ -45,7 +45,7 @@ namespace vktg
         void Reset() override;
         Pipeline Build() override;
 
-        ComputePipelineBuilder& SetShader( vk::ShaderModule shaderModule, std::string_view entryPointName = "main");
+        ComputePipelineBuilder& SetShader( vk::ShaderModule shaderModule, vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
         ComputePipelineBuilder& AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
         ComputePipelineBuilder& AddPushConstant( vk::PushConstantRange pushConstant);
     };
@@ -74,7 +74,7 @@ namespace vktg
         void Reset() override;
         Pipeline Build() override;
 
-        GraphicsPipelineBuilder& AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, std::string_view entryPointName = "main");
+        GraphicsPipelineBuilder& AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
         GraphicsPipelineBuilder& ClearShaders();
         GraphicsPipelineBuilder& AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
         GraphicsPipelineBuilder& ClearDescriptorLayouts();
@@ -127,7 +127,7 @@ namespace vktg
 
     vk::Viewport CreateViewport( float x, float y, float width, float height, float minDepth, float maxDepth);
 
-    vk::Rect2D CreateScissor( float x, float y, float width, float height);
+    vk::Rect2D CreateScissor( uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
 
 } // namespace vktg

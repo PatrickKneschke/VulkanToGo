@@ -43,11 +43,12 @@ namespace vktg
     }
 
     
-    ComputePipelineBuilder& ComputePipelineBuilder::SetShader( vk::ShaderModule shaderModule, std::string_view entryPointName) {
+    ComputePipelineBuilder& ComputePipelineBuilder::SetShader( vk::ShaderModule shaderModule, vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
 
         shaderInfo
             .setModule( shaderModule )
-            .setPName( entryPointName.data() );
+            .setPName( entryPointName.data() )
+            .setPSpecializationInfo( pSpecialization );
 
         return *this;
     }
@@ -153,7 +154,7 @@ namespace vktg
     }
 
     
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, std::string_view entryPointName) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
 
         uint32_t idx = shaderInfos.size();
         shaderInfos.emplace_back( 
@@ -161,6 +162,7 @@ namespace vktg
                 .setModule( shaderModule )
                 .setStage( shaderStage )
                 .setPName( entryPointName.data() )
+                .setPSpecializationInfo( pSpecialization )
         );
 
         return *this;
@@ -470,13 +472,15 @@ namespace vktg
         return viewport;
     }
 
-    vk::Rect2D CreateScissor(float x, float y, float width, float height) {
+
+    vk::Rect2D CreateScissor( uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
         
         auto scissor = vk::Rect2D{}
-            .setOffset( vk::Offset2D{x, y})
-            .setExtent( {width, height} );
+            .setOffset( vk::Offset2D{(int32_t)x, (int32_t)y})
+            .setExtent( vk::Extent2D{width, height} );
     
         return scissor;
     }
+    
 
 } // namespace vktg
