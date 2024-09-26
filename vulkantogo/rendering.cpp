@@ -1,5 +1,6 @@
 
 #include "rendering.h"
+#include "synchronization.h"
 
 
 namespace vktg
@@ -44,17 +45,7 @@ namespace vktg
     
     void TransitionImageLayout( vk::CommandBuffer cmd, vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask, vk::ImageSubresourceRange subResource) {
     
-        auto barrier = vk::ImageMemoryBarrier2{}
-            .setImage( image )
-            .setOldLayout( oldLayout ) 
-            .setNewLayout( newLayout )
-            .setSrcStageMask( srcStage )
-            .setSrcAccessMask( srcAccessMask )
-            .setDstStageMask( dststage )
-            .setDstAccessMask( dstAccessMask )
-            .setSubresourceRange( subResource )
-            .setSrcQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED )
-            .setDstQueueFamilyIndex( VK_QUEUE_FAMILY_IGNORED );
+        auto barrier = CreateImageMemoryBarrier( image, oldLayout, newLayout, srcStage, srcAccessMask, dststage, dstAccessMask, subResource);
 
         auto dependencyInfo = vk::DependencyInfo{}
             .setImageMemoryBarrierCount( 1 )
