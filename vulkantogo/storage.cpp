@@ -6,15 +6,21 @@ namespace vktg
 {
 
 
-    void CreateBuffer( Buffer &buffer, size_t bufferSize, vk::BufferUsageFlags bufferUsage, vma::MemoryUsage memoryUsage, vma::AllocationCreateFlags flags) {
-
+    void CreateBuffer( 
+        Buffer &buffer, size_t bufferSize, vk::BufferUsageFlags bufferUsage, 
+        vma::MemoryUsage memoryUsage, vma::AllocationCreateFlags flags, 
+        vk::SharingMode sharingMode, std::span<uint32_t>  queueFamilies)
+    {
         buffer.bufferUsage = bufferUsage;
         buffer.bufferSize = bufferSize;
         buffer.memoryUsage = memoryUsage;
 
         auto bufferInfo = vk::BufferCreateInfo{}
             .setSize( buffer.bufferSize )
-            .setUsage( buffer.bufferUsage );
+            .setUsage( buffer.bufferUsage )
+            .setSharingMode( sharingMode )
+            .setQueueFamilyIndexCount( queueFamilies.size() )
+            .setPQueueFamilyIndices( queueFamilies.data() );
         
         auto allocInfo = vma::AllocationCreateInfo{}
             .setUsage( buffer.memoryUsage )
@@ -43,7 +49,7 @@ namespace vktg
         uint32_t mipLevels, uint32_t layers, vk::SampleCountFlagBits numSamples, 
         vma::MemoryUsage memoryUsage, vma::AllocationCreateFlags flags, 
         vk::ImageTiling tiling, 
-        vk::SharingMode sharingMode, uint32_t queueFamilyCount, const uint32_t *pQueueFamilies)
+        vk::SharingMode sharingMode, std::span<uint32_t>  queueFamilies)
     {
         image.imageAspect = imageAspect;
         image.imageInfo = vk::ImageCreateInfo{}
@@ -56,8 +62,8 @@ namespace vktg
             .setTiling( tiling )
             .setSamples( numSamples )
             .setSharingMode( sharingMode )
-            .setQueueFamilyIndexCount( queueFamilyCount )
-            .setPQueueFamilyIndices( pQueueFamilies )
+            .setQueueFamilyIndexCount( queueFamilies.size() )
+            .setPQueueFamilyIndices( queueFamilies.data() )
             .setInitialLayout( vk::ImageLayout::eUndefined );
         image.memoryUsage = memoryUsage;
 

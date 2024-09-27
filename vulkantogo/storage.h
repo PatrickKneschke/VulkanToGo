@@ -3,6 +3,8 @@
 
 #include "vk_core.h"
 
+#include <span>
+
 
 namespace vktg
 {
@@ -21,7 +23,8 @@ namespace vktg
     void CreateBuffer(
         Buffer &buffer,
         size_t bufferSize, vk::BufferUsageFlags bufferUsage, 
-        vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{}
+        vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{},
+        vk::SharingMode sharingMode = vk::SharingMode::eExclusive, std::span<uint32_t>  queueFamilies = {}
     );
 
     void DestroyBuffer( const Buffer &buffer);
@@ -50,7 +53,7 @@ namespace vktg
         uint32_t mipLevels = 1, uint32_t layers = 1, vk::SampleCountFlagBits numSamples = vk::SampleCountFlagBits::e1,
         vma::MemoryUsage memoryUsage = vma::MemoryUsage::eGpuOnly, vma::AllocationCreateFlags flags = vma::AllocationCreateFlags{},
         vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
-        vk::SharingMode sharingMode = vk::SharingMode::eExclusive, uint32_t queueFamilyCount = 0, const uint32_t* pQueueFamilies = nullptr
+        vk::SharingMode sharingMode = vk::SharingMode::eExclusive, std::span<uint32_t>  queueFamilies = {}
     );
     
     void DestroyImage( const Image &image);
