@@ -30,6 +30,18 @@ namespace vktg
     }
 
 
+    void CreateStagingBuffer(Buffer buffer, size_t bufferSize) {
+
+        CreateBuffer(
+            buffer,
+            bufferSize,
+            vk::BufferUsageFlagBits::eTransferSrc,
+            vma::MemoryUsage::eCpuOnly,
+            vma::AllocationCreateFlagBits::eMapped
+        );
+    }
+
+
     void DestroyBuffer(const Buffer &buffer) {
 
         if (!buffer.buffer)
