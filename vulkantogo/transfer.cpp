@@ -1,5 +1,6 @@
 
 #include "transfer.h"
+#include "storage.h"
 
 
 namespace vktg
@@ -23,7 +24,7 @@ namespace vktg
     }
 
 
-    void CopyBuffer(vk::CommandBuffer cmd, vk::Buffer srcBuffer, vk::Buffer dstBuffer, std::span<vk::BufferCopy2> regions) {
+    void CopyBuffer( vk::CommandBuffer cmd, vk::Buffer srcBuffer, vk::Buffer dstBuffer, std::span<vk::BufferCopy2> regions) {
 
         auto copyInfo = vk::CopyBufferInfo2{}
             .setSrcBuffer( srcBuffer )
@@ -35,7 +36,7 @@ namespace vktg
     }
 
     
-    void CopyImage(vk::CommandBuffer cmd, vk::Image srcImage, vk::Image dstImage, vk::Rect2D srcRegion, vk::Rect2D dstRegion, vk::Filter filter, vk::ImageSubresourceLayers srcSubresourse, vk::ImageSubresourceLayers dstSubresourse) {
+    void CopyImage( vk::CommandBuffer cmd, vk::Image srcImage, vk::Image dstImage, vk::Rect2D srcRegion, vk::Rect2D dstRegion, vk::Filter filter, vk::ImageSubresourceLayers srcSubresourse, vk::ImageSubresourceLayers dstSubresourse) {
 
         auto blitRegion = vk::ImageBlit2{}
             .setSrcOffsets( {vk::Offset3D{srcRegion.offset.x, srcRegion.offset.y, 0}, vk::Offset3D{(int)srcRegion.extent.width, (int)srcRegion.extent.height, 1}} )
@@ -56,7 +57,7 @@ namespace vktg
     }
 
     
-    void CopyBufferToImage(vk::CommandBuffer cmd, vk::Buffer srcBuffer, vk::Image dstImage, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+    void CopyBufferToImage( vk::CommandBuffer cmd, vk::Buffer srcBuffer, vk::Image dstImage, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
 
         auto copyRegion = vk::BufferImageCopy2{}
             .setBufferOffset( bufferOffset )
@@ -75,7 +76,7 @@ namespace vktg
     }
 
 
-    void CopyImageToBuffer(vk::CommandBuffer cmd, vk::Image srcImage, vk::Buffer dstBuffer, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+    void CopyImageToBuffer( vk::CommandBuffer cmd, vk::Image srcImage, vk::Buffer dstBuffer, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
 
         auto copyRegion = vk::BufferImageCopy2{}
             .setBufferOffset( bufferOffset)
@@ -90,6 +91,32 @@ namespace vktg
             .setPRegions( &copyRegion );
 
         cmd.copyImageToBuffer2( &copyInfo);
+    }
+
+
+    void UploadBufferData( vk::CommandBuffer cmd, void* srcData, vk::Buffer dstBuffer, size_t size, size_t offset) {
+
+        Buffer stagingBuffer;
+        vktg::CreateStagingBuffer( stagingBuffer, size);
+
+        void *data = stagingBuffer.allocationInfo.pMappedData;
+        memcpy( data, srcData, size);
+
+        CopyBuffer( cmd, stagingBuffer.buffer, dstBuffer, size, 0, offset);
+    }
+
+    
+    void UploadImageData( vk::CommandBuffer cmd, void *srcData, vk::Image dstImage, uint32_t width, uint32_t height, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+
+        size_t size = width + height;
+
+        Buffer stagingBuffer;
+        vktg::CreateStagingBuffer( stagingBuffer, size);
+
+        void *data = stagingBuffer.allocationInfo.pMappedData;
+        memcpy( data, srcData, size);
+
+        CopyBufferToImage( cmd, stagingBuffer.buffer, dstImage, 0, width, height, imgOffset, imgSubresource);
     }
 
 

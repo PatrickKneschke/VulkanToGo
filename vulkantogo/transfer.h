@@ -48,5 +48,18 @@ namespace vktg
         vk::ImageSubresourceLayers imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
     );
 
+
+    void UploadBufferData( 
+        vk::CommandBuffer cmd, 
+        void* srcData, vk::Buffer dstBuffer, size_t size, size_t offset
+    );
+
+    void UploadImageData( 
+        vk::CommandBuffer cmd, 
+        void* srcData, vk::Image dstImage, 
+        uint32_t width, uint32_t height, vk::Offset3D imgOffset = vk::Offset3D{0, 0, 0},
+        vk::ImageSubresourceLayers imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
+    );
+
     
 } // namespace vktg
