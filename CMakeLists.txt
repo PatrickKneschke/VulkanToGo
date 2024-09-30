@@ -9,16 +9,4 @@ set( CMAKE_CXX_STANDARD 20)
 
 add_subdirectory( vulkantogo)
 add_subdirectory( test)
-
-add_executable( ${PROJECT_NAME}
-    main.cpp 
-)
-
-target_include_directories( ${PROJECT_NAME} 
-    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
-    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/vulkantogo"
-)
-
-target_link_libraries( ${PROJECT_NAME} 
-    PRIVATE vktg
-)
+add_subdirectory( examples)

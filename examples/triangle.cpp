@@ -2,7 +2,6 @@
 #include "vulkantogo.h"
 
 #include <cmath>
-#include <iostream>
 #include <vector>
 
 
@@ -16,9 +15,10 @@ int main() {
 
 
     // swapchain
-    vktg::Swapchain swapchain = vktg::PrepareSwapchain();
+    auto swapchain = vktg::PrepareSwapchain();
     vktg::CreateSwapchain( swapchain);
 
+    // render image
     vktg::Image renderImage;
     vktg::CreateImage(
         renderImage,
@@ -27,65 +27,11 @@ int main() {
     );
 
 
-    // descriptors
-    uint32_t maxSetsPerPool = 10;
-    std::vector<vk::DescriptorPoolSize> poolSizes = {
-        vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBuffer, maxSetsPerPool},
-        vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer, maxSetsPerPool},
-        vk::DescriptorPoolSize{ vk::DescriptorType::eSampledImage, maxSetsPerPool},
-        vk::DescriptorPoolSize{ vk::DescriptorType::eStorageImage, maxSetsPerPool}
-    };
-    vktg::DescriptorSetAllocator descriptorsetAllocator( poolSizes, maxSetsPerPool);
-    vktg::DescriptorLayoutCache descriptorSetLayoutCache;
-
-    deletionStack.Push( [&](){
-        descriptorSetLayoutCache.DestroyLayouts();
-        descriptorsetAllocator.DestroyPools();
-    });
-
-
-    // compute pipeline
-    vk::ShaderModule computeShader = vktg::LoadShader( "../res/shaders/gradient_comp.spv");
-
-    struct ShaderPushConstants {
-        float tl[4];
-        float tr[4];
-        float bl[4];
-        float br[4];
-    } cornerColors {
-        .tl = {1.f, 0.f, 0.f, 1.f},
-        .tr = {0.f, 1.f, 0.f, 1.f},
-        .bl = {0.f, 0.f, 1.f, 1.f},
-        .br = {0.5f, 0.5f, 0.5f, 1.f}
-    };
-
-    auto computePush = vk::PushConstantRange{}
-        .setStageFlags( vk::ShaderStageFlagBits::eCompute )
-        .setOffset( 0 )
-        .setSize( sizeof(ShaderPushConstants) );
-
-    vk::DescriptorSetLayout computeLayout;
-    vk::DescriptorImageInfo computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
-    vk::DescriptorSet computeSet = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
-        .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo )
-        .Build( &computeLayout );
-
-    vktg::Pipeline computePipeline = vktg::ComputePipelineBuilder()
-        .SetShader( computeShader )
-        .AddDescriptorLayout( computeLayout )
-        .AddPushConstant( computePush )
-        .Build();
-
-    deletionStack.Push( [=](){
-        vktg::DestroyPipelineLayout( computePipeline.pipelineLayout);
-        vktg::DestroyPipeline( computePipeline.pipeline);
-    });
-
     // graphics pipeline
-    vk::ShaderModule vertexShader = vktg::LoadShader( "../res/shaders/triangle_vert.spv");
-    vk::ShaderModule fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
+    auto vertexShader = vktg::LoadShader( "../res/shaders/triangle_vert.spv");
+    auto fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
     std::vector<vk::Format> colorattachmentFormats = {renderImage.imageInfo.format};
-    vktg::Pipeline trianglePipeline = vktg::GraphicsPipelineBuilder()
+    auto trianglePipeline = vktg::GraphicsPipelineBuilder()
         .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex )
         .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment )
         .SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor} )
@@ -101,7 +47,6 @@ int main() {
     });
 
     // cleanup shader modules immediately, no longer needed
-    vktg::DestroyShaderModule( computeShader);
     vktg::DestroyShaderModule( vertexShader);
     vktg::DestroyShaderModule( fragmentShader);
 
@@ -155,13 +100,6 @@ int main() {
                 swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
                 vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
             );
-
-            // update descriptors
-            descriptorsetAllocator.ResetPools();
-            computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
-            computeSet = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
-                .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo)
-                .Build();
         }
 
         // get current frame
@@ -185,26 +123,16 @@ int main() {
             .setFlags( vk::CommandBufferUsageFlagBits::eOneTimeSubmit );
         VK_CHECK( cmd.begin( &commandBeginInfo) );
 
-            //background compute draw
-            vktg::TransitionImageLayout( 
-                cmd, renderImage.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eGeneral,
-                vk::PipelineStageFlagBits2::eTopOfPipe, vk::AccessFlagBits2::eNone,
-                vk::PipelineStageFlagBits2::eComputeShader, vk::AccessFlagBits2::eShaderStorageWrite
-            );
-
-            cmd.bindPipeline( vk::PipelineBindPoint::eCompute, computePipeline.pipeline);
-            cmd.bindDescriptorSets( vk::PipelineBindPoint::eCompute, computePipeline.pipelineLayout, 0, 1, &computeSet, 0, nullptr);
-            cmd.pushConstants( computePipeline.pipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, sizeof(ShaderPushConstants), &cornerColors);
-            cmd.dispatch( std::ceil(renderImage.Width() / 16), std::ceil(renderImage.Height() / 16), 1);
-
             // geometry draw
             vktg::TransitionImageLayout( 
-                cmd, renderImage.image, vk::ImageLayout::eGeneral, vk::ImageLayout::eColorAttachmentOptimal,
+                cmd, renderImage.image, 
+                vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal,
                 vk::PipelineStageFlagBits2::eComputeShader, vk::AccessFlagBits2::eShaderStorageWrite,
                 vk::PipelineStageFlagBits2::eColorAttachmentOutput, vk::AccessFlagBits2::eColorAttachmentWrite
             );
 
-            std::vector<vk::RenderingAttachmentInfo> colorAttachments = {vktg::CreateRenderingAttachment( renderImage.imageView)};
+            auto clearValue = vk::ClearValue{}.setColor( vk::ClearColorValue().setFloat32( {0.f, 0.f, 0.f, 1.f}) );
+            std::vector<vk::RenderingAttachmentInfo> colorAttachments = {vktg::CreateRenderingAttachment( renderImage.imageView, &clearValue)};
             auto renderingInfo = vktg::CreateRenderingInfo( swapchain.extent, colorAttachments);
             cmd.beginRendering( renderingInfo);
 
@@ -223,12 +151,14 @@ int main() {
 
             // copy render image to swapchain
             vktg::TransitionImageLayout( 
-                cmd, renderImage.image, vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::eTransferSrcOptimal,
+                cmd, renderImage.image, 
+                vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::eTransferSrcOptimal,
                 vk::PipelineStageFlagBits2::eColorAttachmentOutput, vk::AccessFlagBits2::eColorAttachmentWrite,
                 vk::PipelineStageFlagBits2::eTransfer, vk::AccessFlagBits2::eTransferRead
             );
             vktg::TransitionImageLayout( 
-                cmd, swapchain.images[imageIndex], vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal,
+                cmd, swapchain.images[imageIndex], 
+                vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal,
                 vk::PipelineStageFlagBits2::eTopOfPipe, vk::AccessFlagBits2::eNone,
                 vk::PipelineStageFlagBits2::eTransfer, vk::AccessFlagBits2::eTransferWrite
             );

@@ -2,8 +2,6 @@
 #include "vulkantogo.h"
 
 #include <cmath>
-#include <iostream>
-#include <vector>
 
 
 int main() {
@@ -12,13 +10,15 @@ int main() {
 
 
     // deletion stack
-    vktg::DeletionStack deletionStack = vktg::DeletionStack{};
+    auto deletionStack = vktg::DeletionStack{};
 
 
-    // swapchain
-    vktg::Swapchain swapchain = vktg::PrepareSwapchain();
+     // swapchain
+    auto swapchain = vktg::PrepareSwapchain();
     vktg::CreateSwapchain( swapchain);
 
+
+    // render image
     vktg::Image renderImage;
     vktg::CreateImage(
         renderImage,
@@ -30,9 +30,6 @@ int main() {
     // descriptors
     uint32_t maxSetsPerPool = 10;
     std::vector<vk::DescriptorPoolSize> poolSizes = {
-        vk::DescriptorPoolSize{ vk::DescriptorType::eUniformBuffer, maxSetsPerPool},
-        vk::DescriptorPoolSize{ vk::DescriptorType::eStorageBuffer, maxSetsPerPool},
-        vk::DescriptorPoolSize{ vk::DescriptorType::eSampledImage, maxSetsPerPool},
         vk::DescriptorPoolSize{ vk::DescriptorType::eStorageImage, maxSetsPerPool}
     };
     vktg::DescriptorSetAllocator descriptorsetAllocator( poolSizes, maxSetsPerPool);
@@ -45,8 +42,9 @@ int main() {
 
 
     // compute pipeline
-    vk::ShaderModule computeShader = vktg::LoadShader( "../res/shaders/gradient_comp.spv");
-
+    // load shader
+    auto computeShader = vktg::LoadShader( "../res/shaders/gradient_comp.spv");
+    // push constants
     struct ShaderPushConstants {
         float tl[4];
         float tr[4];
@@ -58,52 +56,30 @@ int main() {
         .bl = {0.f, 0.f, 1.f, 1.f},
         .br = {0.5f, 0.5f, 0.5f, 1.f}
     };
-
     auto computePush = vk::PushConstantRange{}
         .setStageFlags( vk::ShaderStageFlagBits::eCompute )
         .setOffset( 0 )
         .setSize( sizeof(ShaderPushConstants) );
-
+    // descriptor set
     vk::DescriptorSetLayout computeLayout;
-    vk::DescriptorImageInfo computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
-    vk::DescriptorSet computeSet = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
+    auto computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
+    auto computeDescriptors = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
         .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo )
         .Build( &computeLayout );
-
-    vktg::Pipeline computePipeline = vktg::ComputePipelineBuilder()
+    // build pipeline
+    auto computePipeline = vktg::ComputePipelineBuilder()
         .SetShader( computeShader )
         .AddDescriptorLayout( computeLayout )
         .AddPushConstant( computePush )
         .Build();
 
+    // cleanup shader modules immediately, no longer needed
+    vktg::DestroyShaderModule( computeShader);
+
     deletionStack.Push( [=](){
         vktg::DestroyPipelineLayout( computePipeline.pipelineLayout);
         vktg::DestroyPipeline( computePipeline.pipeline);
     });
-
-    // graphics pipeline
-    vk::ShaderModule vertexShader = vktg::LoadShader( "../res/shaders/triangle_vert.spv");
-    vk::ShaderModule fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
-    std::vector<vk::Format> colorattachmentFormats = {renderImage.imageInfo.format};
-    vktg::Pipeline trianglePipeline = vktg::GraphicsPipelineBuilder()
-        .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex )
-        .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment )
-        .SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor} )
-        .SetInputAssembly( vk::PrimitiveTopology::eTriangleList )
-        .SetPolygonMode( vk::PolygonMode::eFill )
-        .SetCulling( vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise )
-        .SetColorFormats( colorattachmentFormats )
-        .Build();
-
-    deletionStack.Push( [=](){
-        vktg::DestroyPipelineLayout( trianglePipeline.pipelineLayout);
-        vktg::DestroyPipeline( trianglePipeline.pipeline);
-    });
-
-    // cleanup shader modules immediately, no longer needed
-    vktg::DestroyShaderModule( computeShader);
-    vktg::DestroyShaderModule( vertexShader);
-    vktg::DestroyShaderModule( fragmentShader);
 
 
     // frame resources
@@ -159,7 +135,7 @@ int main() {
             // update descriptors
             descriptorsetAllocator.ResetPools();
             computeImageInfo = vktg::GetDescriptorImageInfo( renderImage.imageView, VK_NULL_HANDLE, vk::ImageLayout::eGeneral);
-            computeSet = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
+            computeDescriptors = vktg::DescriptorSetBuilder( &descriptorsetAllocator, &descriptorSetLayoutCache)
                 .BindImage( 0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute, &computeImageInfo)
                 .Build();
         }
@@ -185,50 +161,39 @@ int main() {
             .setFlags( vk::CommandBufferUsageFlagBits::eOneTimeSubmit );
         VK_CHECK( cmd.begin( &commandBeginInfo) );
 
+            // update background colors
+            float tlr = std::cos( frameCount / 1013.f), tlg = std::sin( frameCount / 1013.f);
+            float trg = std::cos( frameCount / 907.f), trb = std::sin( frameCount / 907.f);
+            float blb = std::cos( frameCount / 1129.f), blr = std::sin( frameCount / 1129.f);
+            float brw = std::cos( frameCount / 491.f);
+            cornerColors.tl[0] = tlr*tlr; cornerColors.tl[1] = tlg*tlg;
+            cornerColors.tr[1] = trg*trg; cornerColors.tl[2] = trb*trb;
+            cornerColors.bl[2] = blb*blb; cornerColors.bl[0] = blr*blr;
+            cornerColors.br[0] = cornerColors.br[1] = cornerColors.br[2] = brw*brw;;
+
             //background compute draw
             vktg::TransitionImageLayout( 
-                cmd, renderImage.image, vk::ImageLayout::eUndefined, vk::ImageLayout::eGeneral,
+                cmd, renderImage.image, 
+                vk::ImageLayout::eUndefined, vk::ImageLayout::eGeneral,
                 vk::PipelineStageFlagBits2::eTopOfPipe, vk::AccessFlagBits2::eNone,
                 vk::PipelineStageFlagBits2::eComputeShader, vk::AccessFlagBits2::eShaderStorageWrite
             );
 
             cmd.bindPipeline( vk::PipelineBindPoint::eCompute, computePipeline.pipeline);
-            cmd.bindDescriptorSets( vk::PipelineBindPoint::eCompute, computePipeline.pipelineLayout, 0, 1, &computeSet, 0, nullptr);
+            cmd.bindDescriptorSets( vk::PipelineBindPoint::eCompute, computePipeline.pipelineLayout, 0, 1, &computeDescriptors, 0, nullptr);
             cmd.pushConstants( computePipeline.pipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, sizeof(ShaderPushConstants), &cornerColors);
             cmd.dispatch( std::ceil(renderImage.Width() / 16), std::ceil(renderImage.Height() / 16), 1);
 
-            // geometry draw
-            vktg::TransitionImageLayout( 
-                cmd, renderImage.image, vk::ImageLayout::eGeneral, vk::ImageLayout::eColorAttachmentOptimal,
-                vk::PipelineStageFlagBits2::eComputeShader, vk::AccessFlagBits2::eShaderStorageWrite,
-                vk::PipelineStageFlagBits2::eColorAttachmentOutput, vk::AccessFlagBits2::eColorAttachmentWrite
-            );
-
-            std::vector<vk::RenderingAttachmentInfo> colorAttachments = {vktg::CreateRenderingAttachment( renderImage.imageView)};
-            auto renderingInfo = vktg::CreateRenderingInfo( swapchain.extent, colorAttachments);
-            cmd.beginRendering( renderingInfo);
-
-                cmd.bindPipeline( vk::PipelineBindPoint::eGraphics, trianglePipeline.pipeline);
-                
-                //set dynamic viewport and scissor
-                vk::Viewport viewport = vktg::CreateViewport( 0.f, 0.f, renderImage.Width(), renderImage.Height(), 0.f, 1.f);
-                vk::Rect2D scissor = vktg::CreateScissor( 0.f, 0.f, renderImage.Width(), renderImage.Height());
-                cmd.setViewport( 0, 1, &viewport);
-                cmd.setScissor( 0, 1, &scissor);
-
-                cmd.draw( 3, 1, 0, 0);
-
-            cmd.endRendering();
-
-
             // copy render image to swapchain
             vktg::TransitionImageLayout( 
-                cmd, renderImage.image, vk::ImageLayout::eColorAttachmentOptimal, vk::ImageLayout::eTransferSrcOptimal,
-                vk::PipelineStageFlagBits2::eColorAttachmentOutput, vk::AccessFlagBits2::eColorAttachmentWrite,
+                cmd, renderImage.image, 
+                vk::ImageLayout::eGeneral, vk::ImageLayout::eTransferSrcOptimal,
+                vk::PipelineStageFlagBits2::eComputeShader, vk::AccessFlagBits2::eShaderWrite,
                 vk::PipelineStageFlagBits2::eTransfer, vk::AccessFlagBits2::eTransferRead
             );
             vktg::TransitionImageLayout( 
-                cmd, swapchain.images[imageIndex], vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal,
+                cmd, swapchain.images[imageIndex], 
+                vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal,
                 vk::PipelineStageFlagBits2::eTopOfPipe, vk::AccessFlagBits2::eNone,
                 vk::PipelineStageFlagBits2::eTransfer, vk::AccessFlagBits2::eTransferWrite
             );
@@ -240,7 +205,8 @@ int main() {
 
             // transition swapchain image to present optimal layout
             vktg::TransitionImageLayout( 
-                cmd, swapchain.images[imageIndex], vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::ePresentSrcKHR,
+                cmd, swapchain.images[imageIndex], 
+                vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::ePresentSrcKHR,
                 vk::PipelineStageFlagBits2::eTransfer, vk::AccessFlagBits2::eTransferWrite,
                 vk::PipelineStageFlagBits2::eBottomOfPipe, vk::AccessFlagBits2::eNone
             );
@@ -252,7 +218,6 @@ int main() {
             vk::CommandBufferSubmitInfo{}
                 .setCommandBuffer( cmd )
         };
-
         vk::SemaphoreSubmitInfo waitInfos[] = {
             vk::SemaphoreSubmitInfo{}
                 .setSemaphore( frame.renderSemaphore )
