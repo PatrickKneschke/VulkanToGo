@@ -182,7 +182,7 @@ int main() {
             cmd.bindPipeline( vk::PipelineBindPoint::eCompute, computePipeline.pipeline);
             cmd.bindDescriptorSets( vk::PipelineBindPoint::eCompute, computePipeline.pipelineLayout, 0, 1, &computeDescriptors, 0, nullptr);
             cmd.pushConstants( computePipeline.pipelineLayout, vk::ShaderStageFlagBits::eCompute, 0, sizeof(ShaderPushConstants), &cornerColors);
-            cmd.dispatch( std::ceil(renderImage.Width() / 16), std::ceil(renderImage.Height() / 16), 1);
+            cmd.dispatch( std::ceil(renderImage.Width() / 16.f), std::ceil(renderImage.Height() / 16.f), 1);
 
             // copy render image to swapchain
             vktg::TransitionImageLayout( 
@@ -213,7 +213,7 @@ int main() {
 
         cmd.end();
 
-
+        // submit
         vk::CommandBufferSubmitInfo cmdInfos[] = {
             vk::CommandBufferSubmitInfo{}
                 .setCommandBuffer( cmd )
@@ -229,6 +229,7 @@ int main() {
         };
         vktg::SubmitCommands( vktg::GraphicsQueue(), cmdInfos, waitInfos, signalInfos, frame.renderFence);
 
+        // present
         vktg::PresentImage( swapchain, &frame.presentSemaphore, &imageIndex);
 
         ++frameCount;

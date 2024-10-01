@@ -20,6 +20,7 @@ namespace vktg
     static std::string sWindowTitle = "Main";
     static uint32_t sWindowWidth = 1920;
     static uint32_t sWindowHeight = 1080;
+    static bool sFullScreen = false;
 
     static std::vector<const char*> GetRequiredExtensions() {
 
@@ -27,6 +28,28 @@ namespace vktg
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
             VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME
         };
+    }
+
+    static void ConfigureGlfw() {
+
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // for vulkan
+        
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
+        glfwWindowHint(GLFW_RED_BITS, 8);
+        glfwWindowHint(GLFW_GREEN_BITS, 8);
+        glfwWindowHint(GLFW_BLUE_BITS, 8);
+        glfwWindowHint(GLFW_ALPHA_BITS, 8);
+        glfwWindowHint(GLFW_DEPTH_BITS, 24);
+
+        // glfwWindowHint( GLFW_CENTER_CURSOR, GL_TRUE)
+    }
+
+    static void ConfigureGlfwWindow(GLFWwindow *window) {
+
+        // glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     static vk::PhysicalDeviceFeatures2 GetVulkan10DeviceFeatures() {
@@ -102,23 +125,22 @@ namespace vktg
             }
 
             // configure GLFW window
-            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // for vulkan
-            
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-            glfwWindowHint(GLFW_RED_BITS, 8);
-            glfwWindowHint(GLFW_GREEN_BITS, 8);
-            glfwWindowHint(GLFW_BLUE_BITS, 8);
-            glfwWindowHint(GLFW_ALPHA_BITS, 8);
-            glfwWindowHint(GLFW_DEPTH_BITS, 24);
+            ConfigureGlfw();
 
             // create window
-            window = glfwCreateWindow( sWindowWidth, sWindowHeight, sWindowTitle.c_str(), nullptr, nullptr);
+            if (sFullScreen)
+            {
+                auto monitor = glfwGetPrimaryMonitor();
+                auto mode = glfwGetVideoMode( monitor);
+                window = glfwCreateWindow( mode->width, mode->height, sWindowTitle.c_str(), monitor, nullptr);
+            }
+            else 
+            {
+                window = glfwCreateWindow( sWindowWidth, sWindowHeight, sWindowTitle.c_str(), nullptr, nullptr);
+            }
 
             // additional window configs
-            // glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            ConfigureGlfwWindow( window);
         }
 
         return window;
