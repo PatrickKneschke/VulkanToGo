@@ -311,7 +311,8 @@ namespace vktg
 
         depthStencilInfo
             .setDepthTestEnable( enableTest )
-            .setDepthWriteEnable( enableWrite );
+            .setDepthWriteEnable( enableWrite )
+            .setDepthCompareOp( compareOp );
 
         return *this;
     }

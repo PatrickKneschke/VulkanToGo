@@ -19,6 +19,7 @@ target_sources( vktg PRIVATE
     samplers.h 
     rendering.h 
     transfer.h 
+    submit_context.h 
 
     vk_core.cpp 
     storage.cpp 
@@ -30,6 +31,7 @@ target_sources( vktg PRIVATE
     samplers.cpp
     rendering.cpp 
     transfer.cpp 
+    submit_context.cpp 
 )
 
 target_link_libraries( vktg

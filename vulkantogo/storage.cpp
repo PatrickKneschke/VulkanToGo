@@ -30,7 +30,7 @@ namespace vktg
     }
 
 
-    void CreateStagingBuffer(Buffer buffer, size_t bufferSize) {
+    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, void *data) {
 
         CreateBuffer(
             buffer,
@@ -39,6 +39,12 @@ namespace vktg
             vma::MemoryUsage::eCpuOnly,
             vma::AllocationCreateFlagBits::eMapped
         );
+
+        // fill staging buffer with provided data
+        if (data != nullptr)
+        {
+            memcpy( buffer.allocationInfo.pMappedData, data, bufferSize);
+        }
     }
 
 

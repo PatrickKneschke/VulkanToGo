@@ -27,7 +27,7 @@ namespace vktg
         vk::SharingMode sharingMode = vk::SharingMode::eExclusive, std::span<uint32_t>  queueFamilies = {}
     );
 
-    void CreateStagingBuffer( Buffer buffer, size_t bufferSize);
+    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, void *data = nullptr);
 
     void DestroyBuffer( const Buffer &buffer);
 

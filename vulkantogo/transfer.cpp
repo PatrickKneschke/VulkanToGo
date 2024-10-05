@@ -94,30 +94,4 @@ namespace vktg
     }
 
 
-    void UploadBufferData( vk::CommandBuffer cmd, void* srcData, vk::Buffer dstBuffer, size_t size, size_t offset) {
-
-        Buffer stagingBuffer;
-        vktg::CreateStagingBuffer( stagingBuffer, size);
-
-        void *data = stagingBuffer.allocationInfo.pMappedData;
-        memcpy( data, srcData, size);
-
-        CopyBuffer( cmd, stagingBuffer.buffer, dstBuffer, size, 0, offset);
-    }
-
-    
-    void UploadImageData( vk::CommandBuffer cmd, void *srcData, vk::Image dstImage, uint32_t width, uint32_t height, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
-
-        size_t size = width + height;
-
-        Buffer stagingBuffer;
-        vktg::CreateStagingBuffer( stagingBuffer, size);
-
-        void *data = stagingBuffer.allocationInfo.pMappedData;
-        memcpy( data, srcData, size);
-
-        CopyBufferToImage( cmd, stagingBuffer.buffer, dstImage, 0, width, height, imgOffset, imgSubresource);
-    }
-
-
 } // namespace vktg

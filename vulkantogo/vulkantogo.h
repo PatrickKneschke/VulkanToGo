@@ -9,6 +9,7 @@
 #include "rendering.h" 
 #include "samplers.h"
 #include "storage.h"
+#include "submit_context.h"
 #include "swapchain.h"
 #include "synchronization.h"
 #include "transfer.h"

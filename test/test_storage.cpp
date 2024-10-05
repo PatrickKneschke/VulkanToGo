@@ -27,6 +27,25 @@ TEST_CASE("create buffer", "[storage]") {
     REQUIRE( buffer.memoryUsage == vma::MemoryUsage::eCpuOnly);
     REQUIRE_FALSE( !buffer.allocation);
     REQUIRE( buffer.allocationInfo.pMappedData != nullptr);
+
+    vktg::DestroyBuffer( buffer);
+}
+
+
+TEST_CASE("create staging buffer", "[storage]") {
+
+    float bufferData[] = {1.f, 2.f, 3.f, 4.f};
+    vktg::Buffer buffer;
+    vktg::CreateStagingBuffer( buffer, sizeof( bufferData), bufferData);
+    
+    REQUIRE_FALSE( !buffer.buffer);
+    REQUIRE( buffer.bufferSize == sizeof( bufferData));
+    REQUIRE( buffer.bufferUsage == vk::BufferUsageFlagBits::eTransferSrc);
+    REQUIRE( buffer.memoryUsage == vma::MemoryUsage::eCpuOnly);
+    REQUIRE_FALSE( !buffer.allocation);
+    REQUIRE( buffer.allocationInfo.pMappedData != nullptr);
+ 
+    vktg::DestroyBuffer( buffer);
 }
 
 
@@ -43,5 +62,7 @@ TEST_CASE("create image", "[storage]") {
     REQUIRE( image.imageInfo.arrayLayers == 1);
     REQUIRE( image.imageInfo.format == vk::Format::eD32Sfloat);
     REQUIRE( image.imageInfo.imageType == vk::ImageType::e2D);
+ 
+    vktg::DestroyImage( image);
 }
 
