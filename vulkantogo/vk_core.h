@@ -22,9 +22,9 @@ namespace vktg
 
 
     enum class QueueType : uint8_t {
-        GRAPHICS = 0,
-        COMPUTE = 1,
-        TRANSFER = 2
+        eGraphics = 0,
+        eCompute = 1,
+        eTransfer = 2
     };
     
 

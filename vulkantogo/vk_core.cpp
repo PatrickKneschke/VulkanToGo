@@ -335,27 +335,27 @@ namespace vktg
             VULKAN_HPP_DEFAULT_DISPATCHER.init( device);
 
             // create queues
-            Queue( QueueType::GRAPHICS, graphicsQueueIdx);
-            QueueIndex( QueueType::GRAPHICS, graphicsQueueIdx);
+            Queue( QueueType::eGraphics, graphicsQueueIdx);
+            QueueIndex( QueueType::eGraphics, graphicsQueueIdx);
             if (computeQueueIdx >= 0)
             {
-                Queue( QueueType::COMPUTE, computeQueueIdx);
-                QueueIndex( QueueType::COMPUTE, computeQueueIdx);
+                Queue( QueueType::eCompute, computeQueueIdx);
+                QueueIndex( QueueType::eCompute, computeQueueIdx);
             }
             else
             {
-                Queue( QueueType::COMPUTE, graphicsQueueIdx);
-                QueueIndex( QueueType::COMPUTE, graphicsQueueIdx);
+                Queue( QueueType::eCompute, graphicsQueueIdx);
+                QueueIndex( QueueType::eCompute, graphicsQueueIdx);
             }
             if (transferQueueIdx >= 0)
             {
-                Queue( QueueType::TRANSFER, transferQueueIdx);
-                QueueIndex( QueueType::TRANSFER, transferQueueIdx);
+                Queue( QueueType::eTransfer, transferQueueIdx);
+                QueueIndex( QueueType::eTransfer, transferQueueIdx);
             }
             else
             {
-                Queue( QueueType::TRANSFER, graphicsQueueIdx);
-                QueueIndex( QueueType::TRANSFER, graphicsQueueIdx);
+                Queue( QueueType::eTransfer, graphicsQueueIdx);
+                QueueIndex( QueueType::eTransfer, graphicsQueueIdx);
             }
         }
 
@@ -370,7 +370,7 @@ namespace vktg
         static int32_t transferQueueIdx = -1;
 
         uint32_t idx;
-        if (type == QueueType::GRAPHICS)
+        if (type == QueueType::eGraphics)
         {
             if (graphicsQueueIdx < 0  &&  queueIdx >= 0)
             {
@@ -378,7 +378,7 @@ namespace vktg
             }
             idx = graphicsQueueIdx;
         }
-        else if (type == QueueType::COMPUTE)
+        else if (type == QueueType::eCompute)
         {
             if (computeQueueIdx < 0  &&  queueIdx >= 0)
             {
@@ -386,7 +386,7 @@ namespace vktg
             }
             idx = computeQueueIdx;
         }
-        else if (type == QueueType::TRANSFER)
+        else if (type == QueueType::eTransfer)
         {
             if (transferQueueIdx < 0  &&  queueIdx >= 0)
             {
@@ -398,9 +398,9 @@ namespace vktg
         return idx;
     }
 
-    uint32_t GraphicsQueueIndex() { return QueueIndex( QueueType::GRAPHICS); }
-    uint32_t ComputeQueueIndex() { return QueueIndex( QueueType::COMPUTE); }
-    uint32_t TransferQueueIndex() { return QueueIndex( QueueType::TRANSFER); }
+    uint32_t GraphicsQueueIndex() { return QueueIndex( QueueType::eGraphics); }
+    uint32_t ComputeQueueIndex() { return QueueIndex( QueueType::eCompute); }
+    uint32_t TransferQueueIndex() { return QueueIndex( QueueType::eTransfer); }
 
 
     vk::Queue Queue( QueueType type, int queueIdx) {
@@ -410,7 +410,7 @@ namespace vktg
         static vk::Queue transferQueue;
 
         vk::Queue queue;
-        if (type == QueueType::GRAPHICS)
+        if (type == QueueType::eGraphics)
         {
             if (!graphicsQueue)
             {
@@ -418,7 +418,7 @@ namespace vktg
             }
             queue = graphicsQueue;
         }
-        else if (type == QueueType::COMPUTE)
+        else if (type == QueueType::eCompute)
         {
             if (!computeQueue)
             {
@@ -426,7 +426,7 @@ namespace vktg
             }
             queue = computeQueue;
         }
-        else if (type == QueueType::TRANSFER)
+        else if (type == QueueType::eTransfer)
         {
             if (!transferQueue)
             {
@@ -438,9 +438,9 @@ namespace vktg
         return queue;
     }
 
-    vk::Queue GraphicsQueue() { return Queue( QueueType::GRAPHICS); }
-    vk::Queue ComputeQueue() { return Queue( QueueType::COMPUTE); }
-    vk::Queue TransferQueue() { return Queue( QueueType::TRANSFER); }
+    vk::Queue GraphicsQueue() { return Queue( QueueType::eGraphics); }
+    vk::Queue ComputeQueue() { return Queue( QueueType::eCompute); }
+    vk::Queue TransferQueue() { return Queue( QueueType::eTransfer); }
 
 
     vma::Allocator Allocator() {

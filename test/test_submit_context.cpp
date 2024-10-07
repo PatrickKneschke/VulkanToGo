@@ -6,7 +6,7 @@
 
 TEST_CASE("create/destroy submit context", "[submit_context]") {
 
-    vktg::SubmitContext context = vktg::CreateSubmitContext( vktg::QueueType::GRAPHICS);
+    vktg::SubmitContext context = vktg::CreateSubmitContext( vktg::QueueType::eGraphics);
 
     REQUIRE( context.queue == vktg::GraphicsQueue() );
     REQUIRE_FALSE( !context.cmdPool );
