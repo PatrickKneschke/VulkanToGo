@@ -40,6 +40,18 @@ namespace vktg
         return CreateRenderingAttachment( view, pClear, vk::ImageLayout::eDepthStencilAttachmentOptimal);
     }
 
+    
+    vk::ClearValue CreateClearColorValue(float r, float b, float g, float a) {
+
+        return vk::ClearValue{}.setColor( vk::ClearColorValue().setFloat32( {r, g, b, a}) );
+    }
+
+
+    vk::ClearValue CreateClearDepthStencilValue(float d, float s) {
+
+        return vk::ClearValue{}.setDepthStencil( vk::ClearDepthStencilValue().setDepth( d).setStencil( s) );
+    }
+
 
     vk::RenderingInfo CreateRenderingInfo(vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, vk::RenderingAttachmentInfo *pDepthAttachment, vk::RenderingAttachmentInfo *pStencilAttachment) {
 

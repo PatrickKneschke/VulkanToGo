@@ -20,6 +20,11 @@ namespace vktg
     vk::RenderingAttachmentInfo CreateDepthStencilAttachment( vk::ImageView view, vk::ClearValue* pClear = nullptr);
 
 
+    vk::ClearValue CreateClearColorValue( float r, float b, float g, float a);
+
+    vk::ClearValue CreateClearDepthStencilValue( float d, float s);
+
+
     vk::RenderingInfo CreateRenderingInfo( 
         vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, 
         vk::RenderingAttachmentInfo* pDepthAttachment = nullptr, 
