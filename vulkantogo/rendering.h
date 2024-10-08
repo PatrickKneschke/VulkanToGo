@@ -15,6 +15,11 @@ namespace vktg
         vk::ImageLayout layout=vk::ImageLayout::eColorAttachmentOptimal
     );
 
+    vk::RenderingAttachmentInfo CreateColorAttachment( vk::ImageView view, vk::ClearValue* pClear = nullptr);
+
+    vk::RenderingAttachmentInfo CreateDepthStencilAttachment( vk::ImageView view, vk::ClearValue* pClear = nullptr);
+
+
     vk::RenderingInfo CreateRenderingInfo( 
         vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, 
         vk::RenderingAttachmentInfo* pDepthAttachment = nullptr, 

@@ -28,7 +28,19 @@ namespace vktg
         return attachmentInfo;
     }
 
+
+    vk::RenderingAttachmentInfo CreateColorAttachment(vk::ImageView view, vk::ClearValue *pClear) {
         
+        return CreateRenderingAttachment( view, pClear, vk::ImageLayout::eColorAttachmentOptimal);
+    }
+
+
+    vk::RenderingAttachmentInfo CreateDepthStencilAttachment(vk::ImageView view, vk::ClearValue *pClear) {
+
+        return CreateRenderingAttachment( view, pClear, vk::ImageLayout::eDepthStencilAttachmentOptimal);
+    }
+
+
     vk::RenderingInfo CreateRenderingInfo(vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, vk::RenderingAttachmentInfo *pDepthAttachment, vk::RenderingAttachmentInfo *pStencilAttachment) {
 
         auto renderingInfo = vk::RenderingInfo{}
