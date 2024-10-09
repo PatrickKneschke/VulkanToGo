@@ -21,6 +21,8 @@ target_sources( vktg PRIVATE
     transfer.h 
     submit_context.h 
 
+    util/timer.h
+
     vk_core.cpp 
     storage.cpp 
     swapchain.cpp 
@@ -32,6 +34,8 @@ target_sources( vktg PRIVATE
     rendering.cpp 
     transfer.cpp 
     submit_context.cpp 
+
+    util/timer.cpp 
 )
 
 target_link_libraries( vktg

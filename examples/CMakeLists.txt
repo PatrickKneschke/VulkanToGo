@@ -7,8 +7,8 @@ function( buildExample EXAMPLE_NAME)
 		shared/utility.cpp 
 	)
 	target_include_directories( ${EXAMPLE_NAME}
-	PRIVATE "${PROJECT_SOURCE_DIR}/vulkantogo"
-	PRIVATE "${PROJECT_SOURCE_DIR}/examples/shared"
+		PRIVATE "${PROJECT_SOURCE_DIR}/vulkantogo"
+		PRIVATE "${PROJECT_SOURCE_DIR}/examples/shared"
 	)
 	target_link_libraries( ${EXAMPLE_NAME} 
 		PRIVATE vktg 

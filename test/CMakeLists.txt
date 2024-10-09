@@ -11,7 +11,8 @@ add_executable( test_all
     test_samplers.cpp 
     test_rendering.cpp 
     test_transfer.cpp 
-    test_submit_context.cpp  
+    test_submit_context.cpp 
+    test_timer.cpp 
 )
 
 target_include_directories( test_all 
