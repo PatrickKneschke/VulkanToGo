@@ -110,6 +110,9 @@ namespace vktg
     
     void InputHandler::Update() {
 
+        mDeltaX = 0.0;
+        mDeltaY = 0.0;
+        
         glfwPollEvents();
         if (pTopLayer != nullptr)
         {

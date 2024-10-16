@@ -319,6 +319,15 @@ int main() {
             object.rotation[2] += (keyPress[GLFW_KEY_LEFT_CONTROL]  ?  60  :  20) * frameHandler.DeltaTime();
         }
     };
+    inputLayer.cursorPosCallback = [&](double x, double y, double dx, double dy){
+
+        static float sensitivity = 0.2f;
+        auto right = glm::cross( -camera.forward, camera.up);
+        float yaw = glm::radians( -(float)dx) * sensitivity;
+        float pitch = glm::radians( (float)dy) * sensitivity;
+        camera.forward = glm::mat3( glm::rotate( glm::mat4(1.f), yaw, camera.up) ) * camera.forward;
+        camera.forward = glm::mat3( glm::rotate( glm::mat4(1.f), pitch, right) ) * camera.forward;
+    };
     input.PushLayer( &inputLayer); 
 
 
