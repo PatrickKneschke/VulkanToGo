@@ -53,13 +53,11 @@ namespace vktg
         mDeltaTime = 0.0;
         mElapsedTime = 0.0;
         mElapsedUnscaledTime = 0.0;
-        mElapsedFrames = 0;
     }
 
 
     void Timer::Update() {
 
-        ++mElapsedFrames;
         mDeltaTime = 0.0;
         if (mRunning)
         {
@@ -99,12 +97,6 @@ namespace vktg
     double Timer::ElapsedUnscaledTime() const {
 
         return mElapsedUnscaledTime;
-    }
-
-
-    uint64_t Timer::ElapsedFrames() const {
-
-        return mElapsedFrames;
     }
 
 

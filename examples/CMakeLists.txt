@@ -20,7 +20,8 @@ endfunction(buildExample)
 set( EXAMPLES
 	compute_image 
 	triangle 
-	textured_mesh
+	textured_mesh 
+	input_handler 
 )
 
 foreach( EXAMPLE ${EXAMPLES})

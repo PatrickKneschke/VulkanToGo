@@ -22,6 +22,8 @@ target_sources( vktg PRIVATE
     submit_context.h 
 
     util/timer.h
+    util/frame_handler.h
+    util/input_handler.h
 
     vk_core.cpp 
     storage.cpp 
@@ -36,6 +38,8 @@ target_sources( vktg PRIVATE
     submit_context.cpp 
 
     util/timer.cpp 
+    util/frame_handler.cpp 
+    util/input_handler.cpp 
 )
 
 target_link_libraries( vktg

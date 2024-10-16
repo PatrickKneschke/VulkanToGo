@@ -44,7 +44,7 @@ namespace vktg
         glfwWindowHint(GLFW_ALPHA_BITS, 8);
         glfwWindowHint(GLFW_DEPTH_BITS, 24);
 
-        // glfwWindowHint( GLFW_CENTER_CURSOR, GL_TRUE)
+        glfwWindowHint( GLFW_CENTER_CURSOR, GL_TRUE);
     }
 
     static void ConfigureGlfwWindow(GLFWwindow *window) {

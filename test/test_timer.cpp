@@ -12,7 +12,6 @@ TEST_CASE("create timer", "[util, timer]") {
     REQUIRE( timer.DeltaTime() == 0.f );
     REQUIRE( timer.ElapsedTime() == 0.f );
     REQUIRE( timer.ElapsedUnscaledTime() == 0.f );
-    REQUIRE( timer.ElapsedFrames() == 0 );
     REQUIRE_FALSE( timer.IsRunning() );
 }
 
