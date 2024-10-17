@@ -56,7 +56,6 @@ namespace vktg
 
     ComputePipelineBuilder& ComputePipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout) {
     
-        uint32_t idx = descriptorLayouts.size();
         descriptorLayouts.push_back( descriptorLayout);
 
         return *this;
@@ -65,7 +64,6 @@ namespace vktg
     
     ComputePipelineBuilder& ComputePipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
     
-        uint32_t idx = pushConstants.size();
         pushConstants.push_back( pushConstant);
 
         return *this;
@@ -156,7 +154,6 @@ namespace vktg
     
     GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
 
-        uint32_t idx = shaderInfos.size();
         shaderInfos.emplace_back( 
             vk::PipelineShaderStageCreateInfo{}
                 .setModule( shaderModule )
@@ -177,15 +174,25 @@ namespace vktg
     }
 
 
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddDescriptorLayout( vk::DescriptorSetLayout layout) {
     
-        uint32_t idx = descriptorLayouts.size();
-        descriptorLayouts.push_back( descriptorLayout);
+        descriptorLayouts.push_back( layout);
 
         return *this;
     }
 
     
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::AddDescriptorLayouts(std::span<vk::DescriptorSetLayout> layouts) {
+        
+        for (auto layout : layouts)
+        {
+            descriptorLayouts.push_back( layout);
+        }
+
+        return *this;
+    }
+
+
     GraphicsPipelineBuilder& GraphicsPipelineBuilder::ClearDescriptorLayouts() {
     
         descriptorLayouts.clear();
@@ -196,7 +203,6 @@ namespace vktg
 
     GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
     
-        uint32_t idx = pushConstants.size();
         pushConstants.push_back( pushConstant);
 
         return *this;

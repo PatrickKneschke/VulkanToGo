@@ -76,7 +76,8 @@ namespace vktg
 
         GraphicsPipelineBuilder& AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
         GraphicsPipelineBuilder& ClearShaders();
-        GraphicsPipelineBuilder& AddDescriptorLayout( vk::DescriptorSetLayout descriptorLayout);
+        GraphicsPipelineBuilder& AddDescriptorLayout( vk::DescriptorSetLayout layout);
+        GraphicsPipelineBuilder& AddDescriptorLayouts( std::span<vk::DescriptorSetLayout> layouts);
         GraphicsPipelineBuilder& ClearDescriptorLayouts();
         GraphicsPipelineBuilder& AddPushConstant( vk::PushConstantRange pushConstant);
         GraphicsPipelineBuilder& ClearPushConstants();
