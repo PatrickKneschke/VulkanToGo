@@ -15,8 +15,8 @@ namespace vktg
         vk::Buffer buffer;
         vk::BufferCreateInfo bufferInfo;
 
-        vma::AllocationCreateInfo allocationCreateInfo;
         vma::Allocation allocation;
+        vma::AllocationCreateInfo allocationCreateInfo;
         vma::AllocationInfo allocationInfo;
 
         size_t Size() { return bufferInfo.size; }
@@ -40,18 +40,23 @@ namespace vktg
 
 
     struct Image {
+
         vk::Image image;
         vk::ImageView imageView;
         vk::ImageAspectFlags imageAspect;
         vk::ImageCreateInfo imageInfo;
 
-        vma::MemoryUsage memoryUsage;
         vma::Allocation allocation;
+        vma::AllocationCreateInfo allocationCreateInfo;;
         vma::AllocationInfo allocationInfo;
 
         uint32_t Width() { return imageInfo.extent.width; }
         uint32_t Height() { return imageInfo.extent.height; }
         vk::Format Format() { return imageInfo.format; }
+        vk::ImageUsageFlags Usage() { return imageInfo.usage; }
+        vma::MemoryUsage MemoryUsage() { return allocationCreateInfo.usage; }
+        uint32_t MipLevels() { return imageInfo.mipLevels; }
+        uint32_t Layers() { return imageInfo.arrayLayers; }
     };
 
     void CreateImage(
@@ -64,6 +69,8 @@ namespace vktg
         vk::ImageTiling tiling = vk::ImageTiling::eOptimal,
         vk::SharingMode sharingMode = vk::SharingMode::eExclusive, std::span<uint32_t>  queueFamilies = {}
     );
+
+    void ResizeImage( Image &image, uint32_t newWidth, uint32_t newHeight);
     
     void DestroyImage( const Image &image);
 

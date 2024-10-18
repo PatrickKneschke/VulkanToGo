@@ -267,18 +267,8 @@ int main() {
         	vktg::Device().waitIdle();
 
             vktg::CreateSwapchain( swapchain);
-            vktg::DestroyImage( renderImage);
-            vktg::CreateImage(
-                renderImage,
-                swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
-                vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
-            );
-            vktg::DestroyImage( depthImage);
-            vktg::CreateImage(
-                depthImage,
-                swapchain.extent.width, swapchain.extent.height, vk::Format::eD24UnormS8Uint, 
-                vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth
-            );
+            vktg::ResizeImage( renderImage, swapchain.extent.width, swapchain.extent.height);
+            vktg::ResizeImage( depthImage, swapchain.extent.width, swapchain.extent.height);
         }
 
 

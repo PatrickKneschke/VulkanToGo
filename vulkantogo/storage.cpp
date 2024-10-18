@@ -87,16 +87,27 @@ namespace vktg
             .setQueueFamilyIndexCount( queueFamilies.size() )
             .setPQueueFamilyIndices( queueFamilies.data() )
             .setInitialLayout( vk::ImageLayout::eUndefined );
-        image.memoryUsage = memoryUsage;
 
-        auto allocInfo = vma::AllocationCreateInfo{}
-            .setUsage( image.memoryUsage )
+        image.allocationCreateInfo = vma::AllocationCreateInfo{}
+            .setUsage( memoryUsage )
             .setFlags( flags );
     
-        VK_CHECK( Allocator().createImage( &image.imageInfo, &allocInfo, &image.image, &image.allocation, &image.allocationInfo) );
+        VK_CHECK( Allocator().createImage( &image.imageInfo, &image.allocationCreateInfo, &image.image, &image.allocation, &image.allocationInfo) );
         image.imageView = CreateImageView( 
             image.image, image.imageInfo.format, image.imageAspect, 
             0, image.imageInfo.mipLevels, 0, image.imageInfo.arrayLayers
+        );
+    }
+
+    
+    void ResizeImage(Image &image, uint32_t newWidth, uint32_t newHeight) {
+
+        DestroyImage( image);
+        image.imageInfo.setExtent( vk::Extent3D{newWidth, newHeight, 1} );
+        VK_CHECK( Allocator().createImage( &image.imageInfo, &image.allocationCreateInfo, &image.image, &image.allocation, &image.allocationInfo) );
+        image.imageView = CreateImageView( 
+            image.image, image.Format(), image.imageAspect, 
+            0, image.MipLevels(), 0, image.Layers()
         );
     }
 

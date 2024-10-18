@@ -94,12 +94,7 @@ int main() {
         	vktg::Device().waitIdle();
 
             vktg::CreateSwapchain( swapchain);
-            vktg::DestroyImage( renderImage);
-            vktg::CreateImage(
-                renderImage,
-                swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
-                vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
-            );
+            vktg::ResizeImage( renderImage, swapchain.extent.width, swapchain.extent.height);
         }
 
         // get current frame

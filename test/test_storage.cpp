@@ -74,10 +74,11 @@ TEST_CASE("create image", "[storage]") {
     REQUIRE_FALSE( !image.image);
     REQUIRE_FALSE( !image.imageView);
     REQUIRE_FALSE( !image.allocation);
-    REQUIRE( image.imageInfo.extent == vk::Extent3D{256, 256, 1});
-    REQUIRE( image.imageInfo.mipLevels == 8);
-    REQUIRE( image.imageInfo.arrayLayers == 1);
-    REQUIRE( image.imageInfo.format == vk::Format::eD32Sfloat);
+    REQUIRE( image.Width() == 256);
+    REQUIRE( image.Height() == 256);
+    REQUIRE( image.MipLevels() == 8);
+    REQUIRE( image.Layers() == 1);
+    REQUIRE( image.Format() == vk::Format::eD32Sfloat);
     REQUIRE( image.imageInfo.imageType == vk::ImageType::e2D);
  
     vktg::DestroyImage( image);
