@@ -9,9 +9,9 @@ TEST_CASE("unitialized buffer", "[storage]") {
     vktg::Buffer buffer;
 
     REQUIRE( !buffer.buffer);
-    REQUIRE( buffer.bufferSize == 0);
-    REQUIRE( buffer.bufferUsage == vk::BufferUsageFlags{});
-    REQUIRE( buffer.memoryUsage == vma::MemoryUsage::eUnknown);
+    REQUIRE( buffer.Size() == 0);
+    REQUIRE( buffer.Usage() == vk::BufferUsageFlags{});
+    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eUnknown);
     REQUIRE( !buffer.allocation);
 }
 
@@ -22,11 +22,28 @@ TEST_CASE("create buffer", "[storage]") {
     vktg::CreateBuffer( buffer, 256, vk::BufferUsageFlagBits::eUniformBuffer, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
     
     REQUIRE_FALSE( !buffer.buffer);
-    REQUIRE( buffer.bufferSize == 256);
-    REQUIRE( buffer.bufferUsage == vk::BufferUsageFlagBits::eUniformBuffer);
-    REQUIRE( buffer.memoryUsage == vma::MemoryUsage::eCpuOnly);
+    REQUIRE( buffer.Size() == 256);
+    REQUIRE( buffer.Usage() == vk::BufferUsageFlagBits::eUniformBuffer);
+    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eCpuOnly);
     REQUIRE_FALSE( !buffer.allocation);
-    REQUIRE( buffer.allocationInfo.pMappedData != nullptr);
+    REQUIRE( buffer.Data() != nullptr);
+
+    vktg::DestroyBuffer( buffer);
+}
+
+
+TEST_CASE("resize buffer", "[storage]") {
+
+    vktg::Buffer buffer;
+    vktg::CreateBuffer( buffer, 256, vk::BufferUsageFlagBits::eUniformBuffer, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
+    vktg::ResizeBuffer( buffer, 512);
+
+    REQUIRE_FALSE( !buffer.buffer);
+    REQUIRE( buffer.Size() == 512);
+    REQUIRE( buffer.Usage() == vk::BufferUsageFlagBits::eUniformBuffer);
+    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eCpuOnly);
+    REQUIRE_FALSE( !buffer.allocation);
+    REQUIRE( buffer.Data() != nullptr);
 
     vktg::DestroyBuffer( buffer);
 }
@@ -39,11 +56,11 @@ TEST_CASE("create staging buffer", "[storage]") {
     vktg::CreateStagingBuffer( buffer, sizeof( bufferData), bufferData);
     
     REQUIRE_FALSE( !buffer.buffer);
-    REQUIRE( buffer.bufferSize == sizeof( bufferData));
-    REQUIRE( buffer.bufferUsage == vk::BufferUsageFlagBits::eTransferSrc);
-    REQUIRE( buffer.memoryUsage == vma::MemoryUsage::eCpuOnly);
+    REQUIRE( buffer.Size() == sizeof( bufferData));
+    REQUIRE( buffer.Usage() == vk::BufferUsageFlagBits::eTransferSrc);
+    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eCpuOnly);
     REQUIRE_FALSE( !buffer.allocation);
-    REQUIRE( buffer.allocationInfo.pMappedData != nullptr);
+    REQUIRE( buffer.Data() != nullptr);
  
     vktg::DestroyBuffer( buffer);
 }

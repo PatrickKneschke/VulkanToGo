@@ -11,13 +11,18 @@ namespace vktg
 
 
     struct Buffer {
-        vk::Buffer buffer;
-        vk::BufferUsageFlags bufferUsage = vk::BufferUsageFlags{};
-        size_t bufferSize = 0;
 
-        vma::MemoryUsage memoryUsage = vma::MemoryUsage::eUnknown;
+        vk::Buffer buffer;
+        vk::BufferCreateInfo bufferInfo;
+
+        vma::AllocationCreateInfo allocationCreateInfo;
         vma::Allocation allocation;
-        vma::AllocationInfo allocationInfo;        
+        vma::AllocationInfo allocationInfo;
+
+        size_t Size() { return bufferInfo.size; }
+        void* Data() { return allocationInfo.pMappedData; }
+        vk::BufferUsageFlags Usage() { return bufferInfo.usage; }
+        vma::MemoryUsage Memoryusage() { return allocationCreateInfo.usage; }
     };
 
     void CreateBuffer(
@@ -27,9 +32,11 @@ namespace vktg
         vk::SharingMode sharingMode = vk::SharingMode::eExclusive, std::span<uint32_t>  queueFamilies = {}
     );
 
-    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, void *data = nullptr);
+    void ResizeBuffer( Buffer &buffer, size_t newSize);
 
     void DestroyBuffer( const Buffer &buffer);
+
+    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, void *data = nullptr);
 
 
     struct Image {

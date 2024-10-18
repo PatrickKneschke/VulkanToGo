@@ -11,22 +11,37 @@ namespace vktg
         vma::MemoryUsage memoryUsage, vma::AllocationCreateFlags flags, 
         vk::SharingMode sharingMode, std::span<uint32_t>  queueFamilies)
     {
-        buffer.bufferUsage = bufferUsage;
-        buffer.bufferSize = bufferSize;
-        buffer.memoryUsage = memoryUsage;
-
-        auto bufferInfo = vk::BufferCreateInfo{}
-            .setSize( buffer.bufferSize )
-            .setUsage( buffer.bufferUsage )
+        buffer.bufferInfo = vk::BufferCreateInfo{}
+            .setSize( bufferSize )
+            .setUsage( bufferUsage )
             .setSharingMode( sharingMode )
             .setQueueFamilyIndexCount( queueFamilies.size() )
             .setPQueueFamilyIndices( queueFamilies.data() );
         
-        auto allocInfo = vma::AllocationCreateInfo{}
-            .setUsage( buffer.memoryUsage )
+        buffer.allocationCreateInfo = vma::AllocationCreateInfo{}
+            .setUsage( memoryUsage )
             .setFlags( flags );
 
-        VK_CHECK( Allocator().createBuffer( &bufferInfo, &allocInfo, &buffer.buffer, &buffer.allocation, &buffer.allocationInfo) );
+        VK_CHECK( Allocator().createBuffer( &buffer.bufferInfo, &buffer.allocationCreateInfo, &buffer.buffer, &buffer.allocation, &buffer.allocationInfo) );
+    }
+
+
+    void ResizeBuffer(Buffer &buffer, size_t newSize) {
+
+        DestroyBuffer( buffer);
+        buffer.bufferInfo.setSize( newSize );
+        VK_CHECK( Allocator().createBuffer( &buffer.bufferInfo, &buffer.allocationCreateInfo, &buffer.buffer, &buffer.allocation, &buffer.allocationInfo) );
+    }
+
+
+    void DestroyBuffer(const Buffer &buffer) {
+
+        if (!buffer.buffer)
+        {
+            return;
+        }
+
+        Allocator().destroyBuffer( buffer.buffer, buffer.allocation);
     }
 
 
@@ -43,19 +58,8 @@ namespace vktg
         // fill staging buffer with provided data
         if (data != nullptr)
         {
-            memcpy( buffer.allocationInfo.pMappedData, data, bufferSize);
+            memcpy( buffer.Data(), data, bufferSize);
         }
-    }
-
-
-    void DestroyBuffer(const Buffer &buffer) {
-
-        if (!buffer.buffer)
-        {
-            return;
-        }
-
-        Allocator().destroyBuffer( buffer.buffer, buffer.allocation);
     }
 
 

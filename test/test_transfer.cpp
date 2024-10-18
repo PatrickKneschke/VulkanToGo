@@ -15,7 +15,7 @@ TEST_CASE( "copy buffer to buffer", "[transfer]") {
     vktg::CreateBuffer( buffer2, 16, vk::BufferUsageFlagBits::eUniformBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
 
     float data[4] = {1.f, 2.f, 3.f, 4.f};
-    float *ptr1 = reinterpret_cast<float*>( buffer1.allocationInfo.pMappedData);
+    float *ptr1 = reinterpret_cast<float*>( buffer1.Data());
     for (int i=0; i<4; i++)
     {
         ptr1[i] = data[i];
@@ -42,7 +42,7 @@ TEST_CASE( "copy buffer to buffer", "[transfer]") {
     VK_CHECK( vktg::Device().waitForFences( 1, &fence, true, 1e9) );
 
 
-    float *ptr2 = reinterpret_cast<float*>( buffer2.allocationInfo.pMappedData);
+    float *ptr2 = reinterpret_cast<float*>( buffer2.Data());
     for (int i=0; i<4; i++)
     {
         REQUIRE( ptr2[i] == data[i] );
@@ -61,13 +61,13 @@ TEST_CASE( "copy buffer regions to buffer", "[transfer]") {
     vktg::Buffer buffer2;
     vktg::CreateBuffer( buffer2, 16, vk::BufferUsageFlagBits::eUniformBuffer | vk::BufferUsageFlagBits::eTransferDst, vma::MemoryUsage::eCpuOnly, vma::AllocationCreateFlagBits::eMapped);
 
-    float *ptr1 = reinterpret_cast<float*>( buffer1.allocationInfo.pMappedData);
+    float *ptr1 = reinterpret_cast<float*>( buffer1.Data());
     for (int i=0; i<4; i++)
     {
         ptr1[i] = (float)i;
     }
 
-    float *ptr2 = reinterpret_cast<float*>( buffer2.allocationInfo.pMappedData);
+    float *ptr2 = reinterpret_cast<float*>( buffer2.Data());
     for (int i=0; i<4; i++)
     {
         ptr2[i] = 4.f;

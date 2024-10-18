@@ -194,10 +194,10 @@ int main() {
     });
 
     transferSubmit.Begin();
-        vktg::CopyBuffer( transferSubmit.cmd, vertexStaging.buffer, vertexBuffer.buffer, vertexStaging.bufferSize);
-        vktg::CopyBuffer( transferSubmit.cmd, indexStaging.buffer, indexBuffer.buffer, indexStaging.bufferSize);
-        vktg::CopyBuffer( transferSubmit.cmd, cameraStaging.buffer, cameraBuffer.buffer, cameraStaging.bufferSize);
-        vktg::CopyBuffer( transferSubmit.cmd, objectStaging.buffer, objectBuffer.buffer, objectStaging.bufferSize);
+        vktg::CopyBuffer( transferSubmit.cmd, vertexStaging.buffer, vertexBuffer.buffer, vertexStaging.Size());
+        vktg::CopyBuffer( transferSubmit.cmd, indexStaging.buffer, indexBuffer.buffer, indexStaging.Size());
+        vktg::CopyBuffer( transferSubmit.cmd, cameraStaging.buffer, cameraBuffer.buffer, cameraStaging.Size());
+        vktg::CopyBuffer( transferSubmit.cmd, objectStaging.buffer, objectBuffer.buffer, objectStaging.Size());
         vktg::TransitionImageLayout( 
             transferSubmit.cmd, texture.image, 
             vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal,
@@ -292,8 +292,8 @@ int main() {
         memcpy( cameraStaging.allocationInfo.pMappedData, &camera, sizeof(camera));
 
         transferSubmit.Begin();
-            vktg::CopyBuffer( transferSubmit.cmd, objectStaging.buffer, objectBuffer.buffer, objectStaging.bufferSize);
-            vktg::CopyBuffer( transferSubmit.cmd, cameraStaging.buffer, cameraBuffer.buffer, cameraStaging.bufferSize);
+            vktg::CopyBuffer( transferSubmit.cmd, objectStaging.buffer, objectBuffer.buffer, objectStaging.Size());
+            vktg::CopyBuffer( transferSubmit.cmd, cameraStaging.buffer, cameraBuffer.buffer, cameraStaging.Size());
         transferSubmit.End();
         transferSubmit.Submit();
 
