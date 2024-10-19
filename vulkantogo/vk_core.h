@@ -46,6 +46,7 @@ namespace vktg
 
     void StartUp();
     void ShutDown();
+    void WaitIdle();
 
 
 } // namespace vktg

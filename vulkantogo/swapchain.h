@@ -19,15 +19,25 @@ namespace vktg
 		vk::PresentModeKHR presentMode;
 		vk::Extent2D extent;
 		bool isValid;
+
+
+		uint32_t Width() { return extent.width; }
+		uint32_t Height() { return extent.height; }
     };
 
 
     Swapchain PrepareSwapchain();
+
     void CreateSwapchain( Swapchain &swapchain);
+	
 	void DestroySwapchain( Swapchain &swapchain);
+	
 	void DestroySwapchainImageViews( Swapchain &swapchain);
-    bool NextSwapchainImage( Swapchain &swapchain, vk::Semaphore readySemaphore, uint32_t *imageIndex);
-    bool PresentImage( Swapchain &swapchain, vk::Semaphore *waitSemaphore, uint32_t *imageIndex);
+    
+	
+	bool NextSwapchainImage( Swapchain &swapchain, vk::Semaphore readySemaphore, uint32_t *imageIndex);
+
+	bool PresentImage( Swapchain &swapchain, vk::Semaphore *waitSemaphore, uint32_t *imageIndex);
 
 
 } // namespace vktg

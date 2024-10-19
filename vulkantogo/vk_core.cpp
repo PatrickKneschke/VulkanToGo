@@ -500,5 +500,11 @@ namespace vktg
         glfwTerminate();
     }
 
+    
+    void WaitIdle() {
+
+        Device().waitIdle();
+    }
+    
 
 } // namespace vktg

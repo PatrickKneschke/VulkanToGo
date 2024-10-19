@@ -3,6 +3,8 @@
 
 #include "vk_core.h"
 
+#include <span>
+
 
 namespace vktg
 {
@@ -12,10 +14,18 @@ namespace vktg
     
     void DestroyFence( vk::Fence fence);
 
+    void WaitForFence( vk::Fence fence, uint64_t timeout = 1e9);
+    void WaitForFences( std::span<vk::Fence> fences, bool waitAll = true, uint64_t timeout = 1e9);
+
+    void ResetFence( vk::Fence fence);
+    void ResetFences( std::span<vk::Fence> fences);
+
 
     vk::Semaphore CreateSemaphore( vk::SemaphoreType type = vk::SemaphoreType::eBinary);
     
     void DestroySemaphore( vk::Semaphore semaphore);
+
+    void SignalSemaphore( vk::Semaphore semaphore, uint64_t value);
 
 
     vk::MemoryBarrier2 CreateMemoryBarrier( 

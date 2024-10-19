@@ -2,8 +2,6 @@
 #include "swapchain.h"
 #include "storage.h"
 
-#include <iostream>
-
 
 namespace vktg
 {

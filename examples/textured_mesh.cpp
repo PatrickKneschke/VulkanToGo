@@ -26,14 +26,14 @@ int main() {
     vktg::Image renderImage;
     vktg::CreateImage(
         renderImage,
-        swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
+        swapchain.Width(), swapchain.Height(), vk::Format::eR16G16B16A16Sfloat, 
         vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
     );
     // depth image
     vktg::Image depthImage;
     vktg::CreateImage( 
         depthImage, 
-        swapchain.extent.width, swapchain.extent.height, vk::Format::eD24UnormS8Uint,
+        swapchain.Width(), swapchain.Height(), vk::Format::eD24UnormS8Uint,
         vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::ImageAspectFlagBits::eDepth
     );
 
@@ -215,7 +215,7 @@ int main() {
     transferSubmit.Submit();
 
     // wait for data transfer to complete
-    VK_CHECK( vktg::Device().waitForFences( 1, &transferSubmit.fence, true, 1e9) );
+    vktg::WaitForFence( transferSubmit.fence);
 
     // cleanup staging buffers that are no longer needed
     vktg::DestroyBuffer( vertexStaging);
@@ -264,11 +264,11 @@ int main() {
         // recreate swapchain and render image if outdated
         if (!swapchain.isValid)
         {
-        	vktg::Device().waitIdle();
+        	vktg::WaitIdle();
 
             vktg::CreateSwapchain( swapchain);
-            vktg::ResizeImage( renderImage, swapchain.extent.width, swapchain.extent.height);
-            vktg::ResizeImage( depthImage, swapchain.extent.width, swapchain.extent.height);
+            vktg::ResizeImage( renderImage, swapchain.Width(), swapchain.Height());
+            vktg::ResizeImage( depthImage, swapchain.Width(), swapchain.Height());
         }
 
 
@@ -292,8 +292,8 @@ int main() {
         auto &frame = frameResources[frameCount % frameOverlap];
             
         // wait for render fence to record render commands
-        VK_CHECK( vktg::Device().waitForFences( frame.renderFence, true, 1e9) );
-        VK_CHECK( vktg::Device().resetFences( 1, &frame.renderFence) );
+        vktg::WaitForFence( frame.renderFence);
+        vktg::ResetFence( frame.renderFence);
             
         // get next swapchain image
         uint32_t imageIndex;
@@ -313,7 +313,7 @@ int main() {
             vktg::TransitionImageLayout( 
                 cmd, renderImage.image, 
                 vk::ImageLayout::eUndefined, vk::ImageLayout::eColorAttachmentOptimal,
-                vk::PipelineStageFlagBits2::eComputeShader, vk::AccessFlagBits2::eShaderStorageWrite,
+                vk::PipelineStageFlagBits2::eTopOfPipe, vk::AccessFlagBits2::eNone,
                 vk::PipelineStageFlagBits2::eColorAttachmentOutput, vk::AccessFlagBits2::eColorAttachmentWrite
             );
 
@@ -358,7 +358,7 @@ int main() {
             vktg::CopyImage( 
                 cmd, renderImage.image, swapchain.images[imageIndex],
                 vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{renderImage.Width(), renderImage.Height()}},
-                vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{swapchain.extent.width, swapchain.extent.height}}
+                vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{swapchain.Width(), swapchain.Height()}}
             );
 
             // transition swapchain image to present optimal layout
@@ -372,7 +372,7 @@ int main() {
 
 
         // wait for data transfer to complete
-        VK_CHECK( vktg::Device().waitForFences( 1, &transferSubmit.fence, true, 1e9) );
+        vktg::WaitForFence( transferSubmit.fence);
 
 
         vk::CommandBufferSubmitInfo cmdInfos[] = {
@@ -397,7 +397,7 @@ int main() {
 
 
     // cleanup
-	vktg::Device().waitIdle();
+	vktg::WaitIdle();
 
     deletionStack.Flush();
     vktg::DestroyImage( renderImage);

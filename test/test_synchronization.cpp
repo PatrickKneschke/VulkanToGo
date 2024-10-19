@@ -21,17 +21,14 @@ TEST_CASE("create semaphore", "[synchronization]") {
 
     vk::Semaphore semaphore = vktg::CreateSemaphore( vk::SemaphoreType::eTimeline);
 
-    auto signalInfo = vk::SemaphoreSignalInfo{}
-        .setSemaphore( semaphore )
-        .setValue( 123);
-
-    VK_CHECK( vktg::Device().signalSemaphore( &signalInfo) );
-
+    uint64_t value = 123;
+    vktg::SignalSemaphore( semaphore, value);
+    
     uint64_t counter;
     VK_CHECK( vktg::Device().getSemaphoreCounterValue( semaphore, &counter) );
 
     REQUIRE_FALSE( !semaphore);
-    REQUIRE( counter == 123);
+    REQUIRE( counter == value);
 
     vktg::DestroySemaphore( semaphore);
 }

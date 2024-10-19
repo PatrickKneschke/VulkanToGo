@@ -34,13 +34,14 @@ TEST_CASE( "copy buffer to buffer", "[transfer]") {
 
     cmd.end();
 
-    auto submitInfo = vk::SubmitInfo{}
-        .setCommandBufferCount( 1 )
-        .setPCommandBuffers( &cmd );
 
-    VK_CHECK( vktg::TransferQueue().submit( 1, &submitInfo, fence) );
-    VK_CHECK( vktg::Device().waitForFences( 1, &fence, true, 1e9) );
-
+    vk::CommandBufferSubmitInfo cmdInfos[] = {
+        vk::CommandBufferSubmitInfo{}
+            .setCommandBuffer( cmd )
+    };
+    vktg::SubmitCommands( vktg::TransferQueue(), cmdInfos, {}, {}, fence);
+    vktg::WaitForFence( fence);
+    
 
     float *ptr2 = reinterpret_cast<float*>( buffer2.Data());
     for (int i=0; i<4; i++)
@@ -97,12 +98,13 @@ TEST_CASE( "copy buffer regions to buffer", "[transfer]") {
 
     cmd.end();
 
-    auto submitInfo = vk::SubmitInfo{}
-        .setCommandBufferCount( 1 )
-        .setPCommandBuffers( &cmd );
-
-    VK_CHECK( vktg::TransferQueue().submit( 1, &submitInfo, fence) );
-    VK_CHECK( vktg::Device().waitForFences( 1, &fence, true, 1e9) );
+    
+    vk::CommandBufferSubmitInfo cmdInfos[] = {
+        vk::CommandBufferSubmitInfo{}
+            .setCommandBuffer( cmd )
+    };
+    vktg::SubmitCommands( vktg::TransferQueue(), cmdInfos, {}, {}, fence);
+    vktg::WaitForFence( fence);
 
 
     REQUIRE( ptr2[0] == 1.f );

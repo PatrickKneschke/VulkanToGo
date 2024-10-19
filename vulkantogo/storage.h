@@ -20,9 +20,9 @@ namespace vktg
         vma::AllocationInfo allocationInfo;
 
         size_t Size() { return bufferInfo.size; }
-        void* Data() { return allocationInfo.pMappedData; }
         vk::BufferUsageFlags Usage() { return bufferInfo.usage; }
         vma::MemoryUsage Memoryusage() { return allocationCreateInfo.usage; }
+        void* Data() { return allocationInfo.pMappedData; }
     };
 
     void CreateBuffer(
@@ -57,6 +57,7 @@ namespace vktg
         vma::MemoryUsage MemoryUsage() { return allocationCreateInfo.usage; }
         uint32_t MipLevels() { return imageInfo.mipLevels; }
         uint32_t Layers() { return imageInfo.arrayLayers; }
+        void* Data() { return allocationInfo.pMappedData; }
     };
 
     void CreateImage(

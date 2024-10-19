@@ -22,7 +22,7 @@ int main() {
     vktg::Image renderImage;
     vktg::CreateImage(
         renderImage,
-        swapchain.extent.width, swapchain.extent.height, vk::Format::eR16G16B16A16Sfloat, 
+        swapchain.Width(), swapchain.Height(), vk::Format::eR16G16B16A16Sfloat, 
         vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst
     );
 
@@ -122,10 +122,10 @@ int main() {
         // recreate swapchain and render image if outdated
         if (!swapchain.isValid)
         {
-        	vktg::Device().waitIdle();
+        	vktg::WaitIdle();
 
             vktg::CreateSwapchain( swapchain);
-            vktg::ResizeImage( renderImage, swapchain.extent.width, swapchain.extent.height);
+            vktg::ResizeImage( renderImage, swapchain.Width(), swapchain.Height());
 
             // update descriptors
             descriptorsetAllocator.ResetPools();
@@ -139,8 +139,8 @@ int main() {
         auto &frame = frameResources[frameCount % frameOverlap];
             
         // wait for render fence to record render commands
-        VK_CHECK( vktg::Device().waitForFences( frame.renderFence, true, 1e9) );
-        VK_CHECK( vktg::Device().resetFences( 1, &frame.renderFence) );
+        vktg::WaitForFence( frame.renderFence);
+        vktg::ResetFence( frame.renderFence);
             
         // get next swapchain image
         uint32_t imageIndex;
@@ -195,7 +195,7 @@ int main() {
             vktg::CopyImage( 
                 cmd, renderImage.image, swapchain.images[imageIndex],
                 vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{renderImage.Width(), renderImage.Height()}},
-                vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{swapchain.extent.width, swapchain.extent.height}}
+                vk::Rect2D{vk::Offset2D{0, 0}, vk::Extent2D{swapchain.Width(), swapchain.Height()}}
             );
 
             // transition swapchain image to present optimal layout
@@ -232,7 +232,7 @@ int main() {
 
 
     // cleanup
-	vktg::Device().waitIdle();
+	vktg::WaitIdle();
 
     deletionStack.Flush();
     vktg::DestroyImage( renderImage);
