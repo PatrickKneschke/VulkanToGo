@@ -3,6 +3,7 @@
 #include "vk_core.h"
 
 #include <iostream>
+#include <functional>
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -15,14 +16,9 @@ VULKAN_HPP_DEFAULT_DISPATCH_LOADER_DYNAMIC_STORAGE
 namespace vktg
 {
 
-    /***   CONFIG   ***/
+    /***    DEFAULT CONFIG    ***/
 
-    static std::string sWindowTitle = "Main";
-    static uint32_t sWindowWidth = 1920;
-    static uint32_t sWindowHeight = 1080;
-    static bool sFullScreen = false;
-
-    static std::vector<const char*> GetRequiredExtensions() {
+    static std::vector<const char*> GetRequiredExtensionsDefault() {
 
         return {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -30,7 +26,7 @@ namespace vktg
         };
     }
 
-    static void ConfigureGlfw() {
+    static void ConfigureGlfwDefault() {
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // for vulkan
         
@@ -47,12 +43,12 @@ namespace vktg
         glfwWindowHint( GLFW_CENTER_CURSOR, GL_TRUE);
     }
 
-    static void ConfigureGlfwWindow(GLFWwindow *window) {
+    static void ConfigureGlfwWindowDefault(GLFWwindow *window) {
 
         // glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
-    static vk::PhysicalDeviceFeatures2 GetVulkan10DeviceFeatures() {
+    static vk::PhysicalDeviceFeatures2 GetVulkan10DeviceFeaturesDefault() {
 
         auto features = vk::PhysicalDeviceFeatures2{};
         features.features
@@ -70,14 +66,14 @@ namespace vktg
         return features;
     }
 
-    static vk::PhysicalDeviceVulkan11Features GetVulkan11DeviceFeatures() {
+    static vk::PhysicalDeviceVulkan11Features GetVulkan11DeviceFeaturesDefault() {
         
         auto features11 = vk::PhysicalDeviceVulkan11Features{};
 
         return features11;
     }
 
-    static vk::PhysicalDeviceVulkan12Features GetVulkan12DeviceFeatures() {
+    static vk::PhysicalDeviceVulkan12Features GetVulkan12DeviceFeaturesDefault() {
         
         auto features12 = vk::PhysicalDeviceVulkan12Features{}
             .setBufferDeviceAddress( VK_TRUE )
@@ -88,7 +84,7 @@ namespace vktg
         return features12;
     }
 
-    static vk::PhysicalDeviceVulkan13Features GetVulkan13DeviceFeatures() {
+    static vk::PhysicalDeviceVulkan13Features GetVulkan13DeviceFeaturesDefault() {
         
         auto features13 = vk::PhysicalDeviceVulkan13Features{}
             .setSynchronization2( VK_TRUE )
@@ -97,7 +93,7 @@ namespace vktg
         return features13;
     }
 
-    /***   CONFIG END  ***/
+    /***    DEFAULT CONFIG END    ***/
 
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -106,9 +102,41 @@ namespace vktg
         const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
         void*  )  
     {
-        std::cerr << "validation layer  [" <<  messageSeverity << "], (" << messageType << ") : " << pCallbackData->pMessage << '\n';
+        Config()->debugCallback( messageSeverity, messageType, pCallbackData);
 
         return VK_FALSE;
+    }
+
+
+    ConfigSettings *Config() {
+
+        static ConfigSettings *pConfig;
+
+        if (!pConfig)
+        {
+            pConfig = new ConfigSettings();
+            pConfig->windowTitle = "Main";
+            pConfig->windowWidth = 1920;
+            pConfig->windowHeight = 1080;
+            pConfig->fullScreen = false;
+            pConfig->configureGlfw = ConfigureGlfwDefault;
+            pConfig->configureGlfwWindow = ConfigureGlfwWindowDefault;
+            pConfig->getRequiredExtensions = GetRequiredExtensionsDefault;
+            pConfig->getVulkan10DeviceFeatures = GetVulkan10DeviceFeaturesDefault;
+            pConfig->getVulkan11DeviceFeatures = GetVulkan11DeviceFeaturesDefault;
+            pConfig->getVulkan12DeviceFeatures = GetVulkan12DeviceFeaturesDefault;
+            pConfig->getVulkan13DeviceFeatures = GetVulkan13DeviceFeaturesDefault;
+            pConfig->debugCallback = [](
+                VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
+                VkDebugUtilsMessageTypeFlagsEXT             messageType,
+                const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
+            {
+                std::cerr << "validation layer  [" <<  messageSeverity << "], (" << messageType << ") : " << pCallbackData->pMessage << '\n';
+            };
+
+        }
+
+        return pConfig;
     }
 
 
@@ -125,22 +153,22 @@ namespace vktg
             }
 
             // configure GLFW window
-            ConfigureGlfw();
+            Config()->configureGlfw();
 
             // create window
-            if (sFullScreen)
+            if (Config()->fullScreen)
             {
                 auto monitor = glfwGetPrimaryMonitor();
                 auto mode = glfwGetVideoMode( monitor);
-                window = glfwCreateWindow( mode->width, mode->height, sWindowTitle.c_str(), monitor, nullptr);
+                window = glfwCreateWindow( mode->width, mode->height, Config()->windowTitle.c_str(), monitor, nullptr);
             }
             else 
             {
-                window = glfwCreateWindow( sWindowWidth, sWindowHeight, sWindowTitle.c_str(), nullptr, nullptr);
+                window = glfwCreateWindow( Config()->windowWidth, Config()->windowHeight, Config()->windowTitle.c_str(), nullptr, nullptr);
             }
 
             // additional window configs
-            ConfigureGlfwWindow( window);
+            Config()->configureGlfwWindow( window);
         }
 
         return window;
@@ -207,7 +235,7 @@ namespace vktg
                     vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
                     vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance 
                 )
-                .setPfnUserCallback( DebugCallback);	
+                .setPfnUserCallback( DebugCallback );	
             
             VK_CHECK( Instance().createDebugUtilsMessengerEXT( &debugMessengerInfo, nullptr, &debugMessenger) );
         }
@@ -253,7 +281,7 @@ namespace vktg
                 }
             }
 
-            if( !chosenGpu)
+            if (!chosenGpu)
             {
                 throw std::runtime_error("Failed to find suitable GPU!");
             }
@@ -309,13 +337,13 @@ namespace vktg
             }
 
             // required extentions
-            auto requiredExtensions = GetRequiredExtensions();
+            auto requiredExtensions = Config()->getRequiredExtensions();
 
             // enable device features
-            auto enabledFeatures = GetVulkan10DeviceFeatures();
-            auto enabledFeatures11 = GetVulkan11DeviceFeatures();
-            auto enabledFeatures12 = GetVulkan12DeviceFeatures();
-            auto enabledFeatures13 = GetVulkan13DeviceFeatures();
+            auto enabledFeatures = Config()->getVulkan10DeviceFeatures();
+            auto enabledFeatures11 = Config()->getVulkan11DeviceFeatures();
+            auto enabledFeatures12 = Config()->getVulkan12DeviceFeatures();
+            auto enabledFeatures13 = Config()->getVulkan13DeviceFeatures();
             enabledFeatures.pNext = &enabledFeatures11;
             enabledFeatures11.pNext = &enabledFeatures12;
             enabledFeatures12.pNext = &enabledFeatures13;
@@ -505,6 +533,6 @@ namespace vktg
 
         Device().waitIdle();
     }
-    
+
 
 } // namespace vktg

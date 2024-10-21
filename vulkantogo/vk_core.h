@@ -21,13 +21,41 @@ namespace vktg
 {
 
 
+    struct ConfigSettings {
+
+        // glfw window config
+        std::string windowTitle;
+        uint32_t windowWidth;
+        uint32_t windowHeight;
+        bool fullScreen;
+        std::function<void()> configureGlfw;
+        std::function<void(GLFWwindow*)> configureGlfwWindow;
+
+        // vulkan required device extentions
+        std::function<std::vector<const char*>()> getRequiredExtensions;
+
+        // vulkan device features
+        std::function<vk::PhysicalDeviceFeatures2()> getVulkan10DeviceFeatures;
+        std::function<vk::PhysicalDeviceVulkan11Features()> getVulkan11DeviceFeatures;
+        std::function<vk::PhysicalDeviceVulkan12Features()> getVulkan12DeviceFeatures;
+        std::function<vk::PhysicalDeviceVulkan13Features()> getVulkan13DeviceFeatures;
+
+        // vulkan debug callback
+        std::function<void(
+            VkDebugUtilsMessageSeverityFlagBitsEXT, 
+            VkDebugUtilsMessageTypeFlagsEXT,
+            const VkDebugUtilsMessengerCallbackDataEXT*
+            )> debugCallback;
+    };
+
+
     enum class QueueType : uint8_t {
         eGraphics = 0,
         eCompute = 1,
         eTransfer = 2
     };
     
-
+    ConfigSettings* Config();
     GLFWwindow* Window();
     vk::Instance Instance();
     vk::DebugUtilsMessengerEXT DebugMessenger();
