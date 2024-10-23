@@ -32,13 +32,13 @@ namespace vktg
         std::function<void(GLFWwindow*)> configureGlfwWindow;
 
         // vulkan required device extentions
-        std::function<std::vector<const char*>()> getRequiredExtensions;
+        std::function<void(std::vector<const char*>&)> setRequiredExtensions;
 
         // vulkan device features
-        std::function<vk::PhysicalDeviceFeatures2()> getVulkan10DeviceFeatures;
-        std::function<vk::PhysicalDeviceVulkan11Features()> getVulkan11DeviceFeatures;
-        std::function<vk::PhysicalDeviceVulkan12Features()> getVulkan12DeviceFeatures;
-        std::function<vk::PhysicalDeviceVulkan13Features()> getVulkan13DeviceFeatures;
+        std::function<void(vk::PhysicalDeviceFeatures2&)> setVulkan10DeviceFeatures;
+        std::function<void(vk::PhysicalDeviceVulkan11Features&)> setVulkan11DeviceFeatures;
+        std::function<void(vk::PhysicalDeviceVulkan12Features&)> setVulkan12DeviceFeatures;
+        std::function<void(vk::PhysicalDeviceVulkan13Features&)> setVulkan13DeviceFeatures;
 
         // vulkan debug callback
         std::function<void(

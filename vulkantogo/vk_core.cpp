@@ -18,79 +18,63 @@ namespace vktg
 
     /***    DEFAULT CONFIG    ***/
 
-    static std::vector<const char*> GetRequiredExtensionsDefault() {
+    static void SetRequiredExtensionsDefault( std::vector<const char*>& extensions ) {
 
-        return {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-            VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME
-        };
+        extensions.push_back( VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+        extensions.push_back( VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME );
+        extensions.push_back( VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME );
     }
 
     static void ConfigureGlfwDefault() {
 
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // for vulkan
+        glfwWindowHint( GLFW_CLIENT_API, GLFW_NO_API); // for vulkan
         
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3);
 
-        glfwWindowHint(GLFW_RED_BITS, 8);
-        glfwWindowHint(GLFW_GREEN_BITS, 8);
-        glfwWindowHint(GLFW_BLUE_BITS, 8);
-        glfwWindowHint(GLFW_ALPHA_BITS, 8);
-        glfwWindowHint(GLFW_DEPTH_BITS, 24);
-
-        glfwWindowHint( GLFW_CENTER_CURSOR, GL_TRUE);
+        glfwWindowHint( GLFW_SRGB_CAPABLE, GLFW_TRUE);
     }
 
     static void ConfigureGlfwWindowDefault(GLFWwindow *window) {
 
-        // glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
-    static vk::PhysicalDeviceFeatures2 GetVulkan10DeviceFeaturesDefault() {
+    static void SetVulkan10DeviceFeaturesDefault( vk::PhysicalDeviceFeatures2& features) {
 
-        auto features = vk::PhysicalDeviceFeatures2{};
         features.features
-            .setSamplerAnisotropy( VK_TRUE)
-            .setSampleRateShading( VK_TRUE)
-            .setDepthClamp( VK_TRUE)
-            .setGeometryShader( VK_TRUE)
-            .setTessellationShader( VK_TRUE)
-            .setMultiDrawIndirect( VK_TRUE)
-            .setDrawIndirectFirstInstance( VK_TRUE)
-            .setFillModeNonSolid( VK_TRUE)
-            .setShaderFloat64( VK_TRUE)
-            .setWideLines( VK_TRUE);
-
-        return features;
+            .setFullDrawIndexUint32( VK_TRUE )
+            .setSampleRateShading( VK_TRUE )
+            .setMultiDrawIndirect( VK_TRUE )
+            .setDrawIndirectFirstInstance( VK_TRUE )
+            .setDepthBounds( VK_TRUE )
+            .setDepthClamp( VK_TRUE )
+            .setDepthBiasClamp( VK_TRUE )
+            .setFillModeNonSolid( VK_TRUE )
+            .setLargePoints( VK_TRUE )
+            .setWideLines( VK_TRUE )
+            .setSamplerAnisotropy( VK_TRUE )
+            .setShaderFloat64( VK_TRUE);
     }
 
-    static vk::PhysicalDeviceVulkan11Features GetVulkan11DeviceFeaturesDefault() {
+    static void SetVulkan11DeviceFeaturesDefault( vk::PhysicalDeviceVulkan11Features& features) {
         
-        auto features11 = vk::PhysicalDeviceVulkan11Features{};
-
-        return features11;
     }
 
-    static vk::PhysicalDeviceVulkan12Features GetVulkan12DeviceFeaturesDefault() {
+    static void SetVulkan12DeviceFeaturesDefault( vk::PhysicalDeviceVulkan12Features& features) {
         
-        auto features12 = vk::PhysicalDeviceVulkan12Features{}
-            .setBufferDeviceAddress( VK_TRUE )
+        features
+            .setSamplerMirrorClampToEdge( VK_TRUE )
+            .setDrawIndirectCount( VK_TRUE )
             .setSamplerFilterMinmax( VK_TRUE )
-            .setTimelineSemaphore( VK_TRUE )
-            .setDescriptorIndexing( VK_TRUE );
-
-        return features12;
+            .setBufferDeviceAddress( VK_TRUE )
+            .setTimelineSemaphore( VK_TRUE );
     }
 
-    static vk::PhysicalDeviceVulkan13Features GetVulkan13DeviceFeaturesDefault() {
+    static void SetVulkan13DeviceFeaturesDefault( vk::PhysicalDeviceVulkan13Features& features) {
         
-        auto features13 = vk::PhysicalDeviceVulkan13Features{}
+        features
             .setSynchronization2( VK_TRUE )
             .setDynamicRendering( VK_TRUE );
-
-        return features13;
     }
 
     /***    DEFAULT CONFIG END    ***/
@@ -108,7 +92,7 @@ namespace vktg
     }
 
 
-    ConfigSettings *Config() {
+    ConfigSettings* Config() {
 
         static ConfigSettings *pConfig;
 
@@ -119,13 +103,6 @@ namespace vktg
             pConfig->windowWidth = 1920;
             pConfig->windowHeight = 1080;
             pConfig->fullScreen = false;
-            pConfig->configureGlfw = ConfigureGlfwDefault;
-            pConfig->configureGlfwWindow = ConfigureGlfwWindowDefault;
-            pConfig->getRequiredExtensions = GetRequiredExtensionsDefault;
-            pConfig->getVulkan10DeviceFeatures = GetVulkan10DeviceFeaturesDefault;
-            pConfig->getVulkan11DeviceFeatures = GetVulkan11DeviceFeaturesDefault;
-            pConfig->getVulkan12DeviceFeatures = GetVulkan12DeviceFeaturesDefault;
-            pConfig->getVulkan13DeviceFeatures = GetVulkan13DeviceFeaturesDefault;
             pConfig->debugCallback = [](
                 VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
                 VkDebugUtilsMessageTypeFlagsEXT             messageType,
@@ -153,7 +130,11 @@ namespace vktg
             }
 
             // configure GLFW window
-            Config()->configureGlfw();
+            ConfigureGlfwDefault();
+            if (Config()->configureGlfw)
+            {
+                Config()->configureGlfw();
+            }
 
             // create window
             if (Config()->fullScreen)
@@ -168,7 +149,10 @@ namespace vktg
             }
 
             // additional window configs
-            Config()->configureGlfwWindow( window);
+            if (Config()->configureGlfwWindow)
+            {
+                Config()->configureGlfwWindow( window);
+            }
         }
 
         return window;
@@ -337,13 +321,38 @@ namespace vktg
             }
 
             // required extentions
-            auto requiredExtensions = Config()->getRequiredExtensions();
+            std::vector<const char*> requiredExtensions;
+            SetRequiredExtensionsDefault( requiredExtensions);    
+            if (Config()->setRequiredExtensions)
+            {
+                Config()->setRequiredExtensions( requiredExtensions);
+            }
 
             // enable device features
-            auto enabledFeatures = Config()->getVulkan10DeviceFeatures();
-            auto enabledFeatures11 = Config()->getVulkan11DeviceFeatures();
-            auto enabledFeatures12 = Config()->getVulkan12DeviceFeatures();
-            auto enabledFeatures13 = Config()->getVulkan13DeviceFeatures();
+            auto enabledFeatures = vk::PhysicalDeviceFeatures2{};
+            SetVulkan10DeviceFeaturesDefault( enabledFeatures);
+            if (Config()->setVulkan10DeviceFeatures)
+            {
+                Config()->setVulkan10DeviceFeatures( enabledFeatures);
+            }            
+            auto enabledFeatures11 = vk::PhysicalDeviceVulkan11Features{};
+            SetVulkan11DeviceFeaturesDefault( enabledFeatures11);
+            if (Config()->setVulkan11DeviceFeatures)
+            {
+                Config()->setVulkan11DeviceFeatures( enabledFeatures11);
+            }
+            auto enabledFeatures12 = vk::PhysicalDeviceVulkan12Features{};
+            SetVulkan12DeviceFeaturesDefault( enabledFeatures12);
+            if (Config()->setVulkan12DeviceFeatures)
+            {
+                Config()->setVulkan12DeviceFeatures( enabledFeatures12);
+            }
+            auto enabledFeatures13 = vk::PhysicalDeviceVulkan13Features{};
+            SetVulkan13DeviceFeaturesDefault( enabledFeatures13);
+            if (Config()->setVulkan13DeviceFeatures)
+            {
+                Config()->setVulkan13DeviceFeatures( enabledFeatures13);
+            }
             enabledFeatures.pNext = &enabledFeatures11;
             enabledFeatures11.pNext = &enabledFeatures12;
             enabledFeatures12.pNext = &enabledFeatures13;
