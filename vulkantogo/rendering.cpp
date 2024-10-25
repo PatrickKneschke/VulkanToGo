@@ -41,7 +41,7 @@ namespace vktg
     }
 
     
-    vk::ClearValue CreateClearColorValue(float r, float b, float g, float a) {
+    vk::ClearValue CreateClearColorValue(float r, float g, float b, float a) {
 
         return vk::ClearValue{}.setColor( vk::ClearColorValue().setFloat32( {r, g, b, a}) );
     }

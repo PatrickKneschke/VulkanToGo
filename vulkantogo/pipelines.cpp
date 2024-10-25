@@ -201,21 +201,32 @@ namespace vktg
     }
 
 
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddPushConstant( vk::PushConstantRange pushConst) {
     
-        pushConstants.push_back( pushConstant);
+        pushConstants.push_back( pushConst);
 
         return *this;
     }
 
     
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::ClearPushConstants() {
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::AddPushConstant(std::span<vk::PushConstantRange> pushConsts) {
+       
+        for (auto pc : pushConsts)
+        {
+            pushConstants.push_back( pc);
+        }
+
+        return *this;
+    }
+
+
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::ClearPushConstants()
+    {
 
         pushConstants.clear();
 
         return *this;
     }
-
 
     GraphicsPipelineBuilder &GraphicsPipelineBuilder::SetVertexInputBindng( vk::VertexInputBindingDescription binding) {
 
