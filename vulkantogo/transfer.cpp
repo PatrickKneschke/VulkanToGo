@@ -1,6 +1,8 @@
 
 #include "transfer.h"
 #include "storage.h"
+#include "submit_context.h"
+#include "synchronization.h"
 
 
 namespace vktg
@@ -91,6 +93,47 @@ namespace vktg
             .setPRegions( &copyRegion );
 
         cmd.copyImageToBuffer2( &copyInfo);
+    }
+
+
+    void UploadBufferData(void *srcData, vk::Buffer dstBuffer, size_t size, size_t offset) {
+
+        Buffer stagingBuffer;
+        CreateStagingBuffer( stagingBuffer, size, srcData);
+
+        auto submitContext = CreateSubmitContext( QueueType::eTransfer);
+        submitContext.Begin();
+            CopyBuffer(
+                submitContext.cmd,
+                stagingBuffer.buffer, dstBuffer, 
+                size, 0, offset
+            );
+        submitContext.End();
+        submitContext.Submit();
+        WaitForFence( submitContext.fence);
+
+        DestroySubmitContext( submitContext);
+    }
+
+
+    void UploadImageData(void *srcData, vk::Image dstImage, uint32_t width, uint32_t height, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+
+        Buffer stagingBuffer;
+        CreateStagingBuffer( stagingBuffer, width * height * 4, srcData);
+
+        auto submitContext = CreateSubmitContext( QueueType::eTransfer);
+        submitContext.Begin();
+            CopyBufferToImage(
+                submitContext.cmd,
+                stagingBuffer.buffer, dstImage,
+                0, width, height,
+                imgOffset, imgSubresource                
+            );
+        submitContext.End();
+        submitContext.Submit();
+        WaitForFence( submitContext.fence);
+
+        DestroySubmitContext( submitContext);
     }
 
 
