@@ -9,7 +9,6 @@ add_library( vktg STATIC)
 target_sources( vktg PRIVATE
     vulkantogo.h 
     vk_core.h 
-    deletion_stack.h 
     storage.h 
     swapchain.h 
     synchronization.h 
@@ -20,7 +19,8 @@ target_sources( vktg PRIVATE
     rendering.h 
     transfer.h 
     submit_context.h 
-
+    
+    util/deletion_stack.h 
     util/timer.h
     util/frame_handler.h
     util/input_handler.h
