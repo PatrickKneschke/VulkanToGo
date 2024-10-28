@@ -11,7 +11,7 @@ TEST_CASE("unitialized buffer", "[storage]") {
     REQUIRE( !buffer.buffer);
     REQUIRE( buffer.Size() == 0);
     REQUIRE( buffer.Usage() == vk::BufferUsageFlags{});
-    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eUnknown);
+    REQUIRE( buffer.MemoryUsage() == vma::MemoryUsage::eUnknown);
     REQUIRE( !buffer.allocation);
 }
 
@@ -24,7 +24,7 @@ TEST_CASE("create buffer", "[storage]") {
     REQUIRE_FALSE( !buffer.buffer);
     REQUIRE( buffer.Size() == 256);
     REQUIRE( buffer.Usage() == vk::BufferUsageFlagBits::eUniformBuffer);
-    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eCpuOnly);
+    REQUIRE( buffer.MemoryUsage() == vma::MemoryUsage::eCpuOnly);
     REQUIRE_FALSE( !buffer.allocation);
     REQUIRE( buffer.Data() != nullptr);
 
@@ -41,7 +41,7 @@ TEST_CASE("resize buffer", "[storage]") {
     REQUIRE_FALSE( !buffer.buffer);
     REQUIRE( buffer.Size() == 512);
     REQUIRE( buffer.Usage() == vk::BufferUsageFlagBits::eUniformBuffer);
-    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eCpuOnly);
+    REQUIRE( buffer.MemoryUsage() == vma::MemoryUsage::eCpuOnly);
     REQUIRE_FALSE( !buffer.allocation);
     REQUIRE( buffer.Data() != nullptr);
 
@@ -58,7 +58,7 @@ TEST_CASE("create staging buffer", "[storage]") {
     REQUIRE_FALSE( !buffer.buffer);
     REQUIRE( buffer.Size() == sizeof( bufferData));
     REQUIRE( buffer.Usage() == vk::BufferUsageFlagBits::eTransferSrc);
-    REQUIRE( buffer.Memoryusage() == vma::MemoryUsage::eCpuOnly);
+    REQUIRE( buffer.MemoryUsage() == vma::MemoryUsage::eCpuOnly);
     REQUIRE_FALSE( !buffer.allocation);
     REQUIRE( buffer.Data() != nullptr);
  

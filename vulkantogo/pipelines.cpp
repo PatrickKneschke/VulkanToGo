@@ -36,8 +36,8 @@ namespace vktg
 		auto pipelineInfo = vk::ComputePipelineCreateInfo{}
 			.setStage( shaderInfo)
 			.setLayout( pipeline.pipelineLayout);
-		
-		VK_CHECK( Device().createComputePipelines( nullptr, 1, &pipelineInfo, nullptr, &pipeline.pipeline) );
+
+        pipeline.pipeline = CreateComputePipeline( pipelineInfo);
 
 		return pipeline;
     }
@@ -146,7 +146,7 @@ namespace vktg
 			.setBasePipelineIndex( -1 )
 			.setPNext( &renderInfo );
 		
-		VK_CHECK( Device().createGraphicsPipelines( nullptr, 1, &pipelineInfo, nullptr, &pipeline.pipeline) );
+		pipeline.pipeline = CreateGraphicsPipeline( pipelineInfo);
 
 		return pipeline;
     }
@@ -410,15 +410,33 @@ namespace vktg
 
     /***    UTILITIES    ***/
 
-    
-    void DestroyPipeline(vk::Pipeline pipeline) {
+
+    vk::Pipeline CreateComputePipeline(vk::ComputePipelineCreateInfo &pipelineInfo) {
+
+        vk::Pipeline pipeline;
+        VK_CHECK( Device().createComputePipelines( nullptr, 1, &pipelineInfo, nullptr, &pipeline) );
+
+        return pipeline;
+    }
+
+
+    vk::Pipeline CreateGraphicsPipeline(vk::GraphicsPipelineCreateInfo &pipelineInfo) {
+
+        vk::Pipeline pipeline;
+        VK_CHECK( Device().createGraphicsPipelines( nullptr, 1, &pipelineInfo, nullptr, &pipeline) );
+
+        return pipeline;
+    }
+
+
+    void DestroyPipeline(vk::Pipeline pipeline)
+    {
 
         Device().destroyPipeline( pipeline);
     }
 
 
-    vk::PipelineLayout CreatePipelineLayout( std::span<vk::DescriptorSetLayout> descriptorLayouts, std::span<vk::PushConstantRange> pushConstants)
-    {
+    vk::PipelineLayout CreatePipelineLayout( std::span<vk::DescriptorSetLayout> descriptorLayouts, std::span<vk::PushConstantRange> pushConstants) {
 
         auto layoutInfo = vk::PipelineLayoutCreateInfo{}
             .setSetLayoutCount( (uint32_t)descriptorLayouts.size() )

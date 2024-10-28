@@ -229,6 +229,15 @@ namespace vktg
     };
 
 
+    /// @brief Creates Vulkan compute pipeline from pipeline create info.
+    /// @param pipelineInfo Pipeline create info,
+    /// @return Vulkan pipeline.
+    vk::Pipeline CreateComputePipeline( vk::ComputePipelineCreateInfo &pipelineInfo);
+    /// @brief Creates Vulkan graphics pipeline from pipeline create info.
+    /// @param pipelineInfo Pipeline create info,
+    /// @return Vulkan pipeline.
+    vk::Pipeline CreateGraphicsPipeline( vk::GraphicsPipelineCreateInfo &pipelineInfo);
+
     /// @brief Destroys given pipeline.
     /// @param pipeline Pipeline to destroy.
     void DestroyPipeline( vk::Pipeline pipeline);
