@@ -113,6 +113,7 @@ namespace vktg
         WaitForFence( submitContext.fence);
 
         DestroySubmitContext( submitContext);
+        DestroyBuffer( stagingBuffer);
     }
 
 
@@ -134,6 +135,7 @@ namespace vktg
         WaitForFence( submitContext.fence);
 
         DestroySubmitContext( submitContext);
+        DestroyBuffer( stagingBuffer);
     }
 
 

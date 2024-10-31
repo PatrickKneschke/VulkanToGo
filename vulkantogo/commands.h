@@ -10,7 +10,7 @@ namespace vktg
 {
 
 
-    /// @brief 
+    /// @brief Creates a Vulkan command pool.
     /// @param queueFamily Queue family index to allocate command pool from.
     /// @param flags Command pool creation flags. 
     /// @return Vulkan command pool.
