@@ -19,7 +19,7 @@ namespace vktg
             /// @brief Creates descriptor set layout from given create info or return matching layout from cache.
             /// @param layoutInfo Vulkan descriptor set layout create info.
             /// @return Vulkan descriptor set layout.
-            vk::DescriptorSetLayout CreateLayout( vk::DescriptorSetLayoutCreateInfo *layoutInfo);
+            vk::DescriptorSetLayout CreateLayout( const vk::DescriptorSetLayoutCreateInfo *layoutInfo);
             /// @brief Creates descriptor set layout from given list of descriptor layout bindings or return matching layout from cache.
             /// @param layoutInfo List of Vulkan descriptor set layout bindings.
             /// @return Vulkan descriptor set layout.
@@ -54,7 +54,6 @@ namespace vktg
             /// @brief Destroys all created descriptor pools.
             void DestroyPools();
 
-
         private:
 
             /// @brief Fetches unused descriptor pool or creates new one if no unused pool is available.
@@ -88,14 +87,14 @@ namespace vktg
             /// @param stages Shader stage.
             /// @param bufferInfo Descriptor buffer info.
             /// @return Reference to DescriptorSetBuilder for chaining.
-            DescriptorSetBuilder& BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorBufferInfo* bufferInfo);
+            DescriptorSetBuilder& BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, const vk::DescriptorBufferInfo* bufferInfo);
             /// @brief Bind an image to a specific descriptor binding and crates descriptor write for later update.
             /// @param binding Descriptor set binding.
             /// @param type Descriptor type.
             /// @param stages Shader stage.
             /// @param bufferInfo Descriptor image info.
             /// @return Reference to DescriptorSetBuilder for chaining.
-            DescriptorSetBuilder& BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorImageInfo* imageInfo);
+            DescriptorSetBuilder& BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, const vk::DescriptorImageInfo* imageInfo);
 
             /// @brief Build and update descriptor set with provided bindings.
             /// @param pLayout Optional pointer to retrieve descriptor set layout of created descriptor set.

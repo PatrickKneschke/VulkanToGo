@@ -16,22 +16,19 @@ namespace vktg
     /// @param pClear Clear value of the attachment.
     /// @param layout Image layout of the attachment.
     /// @return Vulkan rendering attachment info.
-    vk::RenderingAttachmentInfo CreateRenderingAttachment( 
-        vk::ImageView view, vk::ClearValue* pClear = nullptr, 
-        vk::ImageLayout layout=vk::ImageLayout::eColorAttachmentOptimal
-    );
+    vk::RenderingAttachmentInfo CreateRenderingAttachment( vk::ImageView view, const vk::ClearValue* pClear = nullptr, vk::ImageLayout layout=vk::ImageLayout::eColorAttachmentOptimal);
 
     /// @brief Creates color attachment for dynamic rendering.
     /// @param view Image view of the attachment.
     /// @param pClear Clear color value for color attachment.
     /// @return Vulkan rendering attachment info.
-    vk::RenderingAttachmentInfo CreateColorAttachment( vk::ImageView view, vk::ClearValue* pClear = nullptr);
+    vk::RenderingAttachmentInfo CreateColorAttachment( vk::ImageView view, const vk::ClearValue* pClear = nullptr);
     
     /// @brief Creates depth-stencil attachment for dynamic rendering.
     /// @param view Image view of the attachment.
     /// @param pClear Clear depth-stencil value for color attachment.
     /// @return Vulkan rendering attachment info.
-    vk::RenderingAttachmentInfo CreateDepthStencilAttachment( vk::ImageView view, vk::ClearValue* pClear = nullptr);
+    vk::RenderingAttachmentInfo CreateDepthStencilAttachment( vk::ImageView view, const vk::ClearValue* pClear = nullptr);
 
 
     /// @brief Creates clear color value for rendering attachments.
@@ -57,8 +54,8 @@ namespace vktg
     /// @return Vulkan rendering info
     vk::RenderingInfo CreateRenderingInfo( 
         vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, 
-        vk::RenderingAttachmentInfo* pDepthAttachment = nullptr, 
-        vk::RenderingAttachmentInfo* pStencilAttachment = nullptr
+        const vk::RenderingAttachmentInfo* pDepthAttachment = nullptr, 
+        const vk::RenderingAttachmentInfo* pStencilAttachment = nullptr
     );
 
 
@@ -77,7 +74,7 @@ namespace vktg
         vk::ImageLayout oldLayout, vk::ImageLayout newLayout,
         vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, 
         vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask,
-        vk::ImageSubresourceRange subResource = vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1} 
+        const vk::ImageSubresourceRange &subResource = vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1} 
     );
 
     

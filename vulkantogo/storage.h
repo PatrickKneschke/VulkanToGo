@@ -22,16 +22,16 @@ namespace vktg
 
         /// @brief Buffer size in bytes.
         /// @return Buffer size in bytes. 
-        size_t Size() { return bufferInfo.size; }
+        size_t Size() const { return bufferInfo.size; }
         /// @brief Buffer usage.
         /// @return Buffer usage flags.
-        vk::BufferUsageFlags Usage() { return bufferInfo.usage; }
+        vk::BufferUsageFlags Usage() const { return bufferInfo.usage; }
         /// @brief Buffer memory usage.
         /// @return Vma memory usage.
-        vma::MemoryUsage MemoryUsage() { return allocationCreateInfo.usage; }
+        vma::MemoryUsage MemoryUsage() const { return allocationCreateInfo.usage; }
         /// @brief Pointer to mapped buffer memory if created with mapped memory.
         /// @return Pointer to mappen buffer data.
-        void* Data() { return allocationInfo.pMappedData; }
+        void* Data() const { return allocationInfo.pMappedData; }
     };
 
     /// @brief Creates Vulkan buffer and stores it in given Buffer object, along with all the data used to create it.
@@ -63,7 +63,7 @@ namespace vktg
     /// @param buffer Buffer object to store Vulkan buffer and metadata in,
     /// @param bufferSize Size of the stagingbuffer.
     /// @param data Data to copy into staging buffer after cration.
-    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, void *data = nullptr);
+    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, const void *data = nullptr);
 
 
     /// @brief Stores Vulkan image, full image view and all the inforation used to (re-)create it.
@@ -80,28 +80,28 @@ namespace vktg
 
         /// @brief Image width.
         /// @return Image width.
-        uint32_t Width() { return imageInfo.extent.width; }
+        uint32_t Width() const { return imageInfo.extent.width; }
         /// @brief Image height.
         /// @return Image height.
-        uint32_t Height() { return imageInfo.extent.height; }
+        uint32_t Height() const { return imageInfo.extent.height; }
         /// @brief Image format.
         /// @return Vulkan Format.
-        vk::Format Format() { return imageInfo.format; }
+        vk::Format Format() const { return imageInfo.format; }
         /// @brief Image usage.
         /// @return VUlkan Image usage flags.
-        vk::ImageUsageFlags Usage() { return imageInfo.usage; }
+        vk::ImageUsageFlags Usage() const { return imageInfo.usage; }
         /// @brief Image memory usage.
         /// @return Vma memory usage.
-        vma::MemoryUsage MemoryUsage() { return allocationCreateInfo.usage; }
+        vma::MemoryUsage MemoryUsage() const { return allocationCreateInfo.usage; }
         /// @brief Image mip levels.
         /// @return Image mip levels.
-        uint32_t MipLevels() { return imageInfo.mipLevels; }
+        uint32_t MipLevels() const { return imageInfo.mipLevels; }
         /// @brief Number of image layers.
         /// @return Number of image layers.
-        uint32_t Layers() { return imageInfo.arrayLayers; }
+        uint32_t Layers() const { return imageInfo.arrayLayers; }
         /// @brief Pointer to image data if created with mapped memory.
         /// @return Pointer to mapped image memory.
-        void* Data() { return allocationInfo.pMappedData; }
+        void* Data() const { return allocationInfo.pMappedData; }
     };
 
     /// @brief Creates Vulkan image and stores it in given Image object along all the data used to create it.

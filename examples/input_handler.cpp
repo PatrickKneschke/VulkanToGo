@@ -169,13 +169,14 @@ int main() {
         .Build( &textureDescriptorLayout );
     // build pipeline
     auto vertexAttributes = Vertex::getAttributeDescriptions();
+    std::vector<vk::DynamicState> dynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
     std::vector<vk::Format> colorattachmentFormats = {renderImage.Format()};
     std::vector<vk::DescriptorSetLayout> descriptorLayouts = {cameraDescriptorLayout, objectDescriptorLayout, textureDescriptorLayout};
     auto texturedMeshPipeline = vktg::GraphicsPipelineBuilder()
         .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex )
         .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment )
         .AddDescriptorLayouts( descriptorLayouts )
-        .SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor} )
+        .SetDynamicStates( dynamicStates )
         .SetVertexInputBindng( Vertex::getBindingDescription() )
         .SetVertexAttributes( vertexAttributes )
         .SetInputAssembly( vk::PrimitiveTopology::eTriangleList )

@@ -94,7 +94,7 @@ namespace vktg
         vk::ImageLayout oldLayout, vk::ImageLayout newLayout,
         vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, 
         vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask,
-        vk::ImageSubresourceRange subResource = vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1} 
+        const vk::ImageSubresourceRange &subResource = vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1} 
     );
 
     

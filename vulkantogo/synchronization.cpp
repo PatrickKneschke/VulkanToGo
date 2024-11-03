@@ -108,7 +108,7 @@ namespace vktg
     }
 
 
-    vk::ImageMemoryBarrier2 CreateImageMemoryBarrier( vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask, vk::ImageSubresourceRange subResource) {
+    vk::ImageMemoryBarrier2 CreateImageMemoryBarrier( vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask, const vk::ImageSubresourceRange &subResource) {
 
         auto barrier = vk::ImageMemoryBarrier2{}
             .setImage( image )

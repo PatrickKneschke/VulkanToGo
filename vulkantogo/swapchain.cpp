@@ -144,7 +144,7 @@ namespace vktg
     }
 
 
-    bool PresentImage( Swapchain &swapchain, vk::Semaphore *waitSemaphore, uint32_t *imageIndex) {
+    bool PresentImage( Swapchain &swapchain, const vk::Semaphore *waitSemaphore, uint32_t *imageIndex) {
 
         auto presentInfo = vk::PresentInfoKHR{}
             .setWaitSemaphoreCount( 1 )

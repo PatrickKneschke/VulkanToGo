@@ -7,7 +7,7 @@ namespace vktg
 {
 
 
-    vk::RenderingAttachmentInfo CreateRenderingAttachment( vk::ImageView view, vk::ClearValue *pClear, vk::ImageLayout layout) {
+    vk::RenderingAttachmentInfo CreateRenderingAttachment( vk::ImageView view, const vk::ClearValue *pClear, vk::ImageLayout layout) {
 
         auto attachmentInfo = vk::RenderingAttachmentInfo{}
             .setImageView( view )
@@ -29,13 +29,13 @@ namespace vktg
     }
 
 
-    vk::RenderingAttachmentInfo CreateColorAttachment(vk::ImageView view, vk::ClearValue *pClear) {
+    vk::RenderingAttachmentInfo CreateColorAttachment(vk::ImageView view, const vk::ClearValue *pClear) {
         
         return CreateRenderingAttachment( view, pClear, vk::ImageLayout::eColorAttachmentOptimal);
     }
 
 
-    vk::RenderingAttachmentInfo CreateDepthStencilAttachment(vk::ImageView view, vk::ClearValue *pClear) {
+    vk::RenderingAttachmentInfo CreateDepthStencilAttachment(vk::ImageView view, const vk::ClearValue *pClear) {
 
         return CreateRenderingAttachment( view, pClear, vk::ImageLayout::eDepthStencilAttachmentOptimal);
     }
@@ -53,7 +53,7 @@ namespace vktg
     }
 
 
-    vk::RenderingInfo CreateRenderingInfo(vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, vk::RenderingAttachmentInfo *pDepthAttachment, vk::RenderingAttachmentInfo *pStencilAttachment) {
+    vk::RenderingInfo CreateRenderingInfo(vk::Extent2D renderExtent, std::span<vk::RenderingAttachmentInfo> colorAttachments, const vk::RenderingAttachmentInfo *pDepthAttachment, const vk::RenderingAttachmentInfo *pStencilAttachment) {
 
         auto renderingInfo = vk::RenderingInfo{}
             .setRenderArea( vk::Rect2D{ vk::Offset2D{0, 0}, renderExtent})
@@ -67,7 +67,7 @@ namespace vktg
     }
 
     
-    void TransitionImageLayout( vk::CommandBuffer cmd, vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask, vk::ImageSubresourceRange subResource) {
+    void TransitionImageLayout( vk::CommandBuffer cmd, vk::Image image, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, vk::PipelineStageFlags2 srcStage, vk::AccessFlags2 srcAccessMask, vk::PipelineStageFlags2 dststage, vk::AccessFlags2 dstAccessMask, const vk::ImageSubresourceRange &subResource) {
     
         auto barrier = CreateImageMemoryBarrier( image, oldLayout, newLayout, srcStage, srcAccessMask, dststage, dstAccessMask, subResource);
 

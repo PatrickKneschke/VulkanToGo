@@ -45,10 +45,10 @@ namespace vktg
     void CopyImage( 
         vk::CommandBuffer cmd, 
         vk::Image srcImage, vk::Image dstImage, 
-        vk::Rect2D srcRegion, vk::Rect2D dstRegion,
+        const vk::Rect2D &srcRegion, const vk::Rect2D &dstRegion,
         vk::Filter filter = vk::Filter::eLinear,
-        vk::ImageSubresourceLayers srcSubresourse = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
-        vk::ImageSubresourceLayers dstSubresourse = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
+        const vk::ImageSubresourceLayers &srcSubresourse = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1},
+        const vk::ImageSubresourceLayers &dstSubresourse = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
     );
 
 
@@ -65,8 +65,8 @@ namespace vktg
         vk::CommandBuffer cmd,
         vk::Buffer srcBuffer, vk::Image dstImage,
         size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight,
-        vk::Offset3D imgOffset = vk::Offset3D{0, 0, 0},
-        vk::ImageSubresourceLayers imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
+        const vk::Offset3D &imgOffset = vk::Offset3D{0, 0, 0},
+        const vk::ImageSubresourceLayers &imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
     );
 
 
@@ -83,8 +83,8 @@ namespace vktg
         vk::CommandBuffer cmd,
         vk::Image srcImage, vk::Buffer dstBuffer, 
         size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight,
-        vk::Offset3D imgOffset = vk::Offset3D{0, 0, 0},
-        vk::ImageSubresourceLayers imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
+        const vk::Offset3D &imgOffset = vk::Offset3D{0, 0, 0},
+        const vk::ImageSubresourceLayers &imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
     );
 
 
@@ -93,7 +93,7 @@ namespace vktg
     /// @param dstBuffer Destination buffer.
     /// @param size Size of data to copy.
     /// @param offset Offset of buffer region to copy into.
-    void UploadBufferData( void* srcData, vk::Buffer dstBuffer, size_t size, size_t offset);
+    void UploadBufferData( const void* srcData, vk::Buffer dstBuffer, size_t size, size_t offset);
 
     /// @brief Uploads image data to GPU. Intended for use on separate thread, since it will wait for completion.
     /// @param srcData Pointer to source data location.
@@ -104,8 +104,8 @@ namespace vktg
     /// @param imgSubresource Destination image subresource
     void UploadImageData( 
         void* srcData, vk::Image dstImage, 
-        uint32_t width, uint32_t height, vk::Offset3D imgOffset = vk::Offset3D{0, 0, 0},
-        vk::ImageSubresourceLayers imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
+        uint32_t width, uint32_t height, const vk::Offset3D &imgOffset = vk::Offset3D{0, 0, 0},
+        const vk::ImageSubresourceLayers &imgSubresource = vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1}
     );
 
     

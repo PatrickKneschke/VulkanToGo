@@ -24,10 +24,10 @@ namespace vktg
 
 		/// @brief Access swapchain image width.
 		/// @return Image width.
-		uint32_t Width() { return extent.width; }
+		uint32_t Width() const { return extent.width; }
 		/// @brief Access swapcahi mage height.
 		/// @return Image height.
-		uint32_t Height() { return extent.height; }
+		uint32_t Height() const { return extent.height; }
     };
 
 
@@ -61,7 +61,7 @@ namespace vktg
 	/// @param waitSemaphore Semaphores to wait on before presenting.
 	/// @param imageIndex Index of the swapchain image to present.
 	/// @return True is swapchain is still valid, false otherwise.
-	bool PresentImage( Swapchain &swapchain, vk::Semaphore *waitSemaphore, uint32_t *imageIndex);
+	bool PresentImage( Swapchain &swapchain, const vk::Semaphore *waitSemaphore, uint32_t *imageIndex);
 
 
 } // namespace vktg

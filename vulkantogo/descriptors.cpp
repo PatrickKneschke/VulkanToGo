@@ -6,7 +6,7 @@ namespace vktg
 {
 
 
-    vk::DescriptorSetLayout DescriptorLayoutCache::CreateLayout( vk::DescriptorSetLayoutCreateInfo *layoutInfo) {
+    vk::DescriptorSetLayout DescriptorLayoutCache::CreateLayout( const vk::DescriptorSetLayoutCreateInfo *layoutInfo) {
 
         // hash descriptor set layout
         uint64_t layoutId = 0;
@@ -137,7 +137,7 @@ namespace vktg
     }
 
 
-    DescriptorSetBuilder& DescriptorSetBuilder::BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorBufferInfo *bufferInfo) {
+    DescriptorSetBuilder& DescriptorSetBuilder::BindBuffer( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, const vk::DescriptorBufferInfo *bufferInfo) {
         
         auto newBinding = vk::DescriptorSetLayoutBinding{}
             .setBinding( binding )
@@ -158,7 +158,7 @@ namespace vktg
     }
 
 
-    DescriptorSetBuilder& DescriptorSetBuilder::BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, vk::DescriptorImageInfo *imageInfo) {
+    DescriptorSetBuilder& DescriptorSetBuilder::BindImage( uint32_t binding, vk::DescriptorType type, vk::ShaderStageFlags stages, const vk::DescriptorImageInfo *imageInfo) {
 
         auto newBinding = vk::DescriptorSetLayoutBinding{}
             .setBinding( binding )

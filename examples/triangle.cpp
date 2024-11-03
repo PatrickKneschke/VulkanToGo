@@ -30,11 +30,12 @@ int main() {
     // graphics pipeline
     auto vertexShader = vktg::LoadShader( "../res/shaders/triangle_vert.spv");
     auto fragmentShader = vktg::LoadShader( "../res/shaders/triangle_frag.spv");
+    std::vector<vk::DynamicState> dynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
     std::vector<vk::Format> colorattachmentFormats = {renderImage.imageInfo.format};
     auto trianglePipeline = vktg::GraphicsPipelineBuilder()
         .AddShader( vertexShader, vk::ShaderStageFlagBits::eVertex )
         .AddShader( fragmentShader, vk::ShaderStageFlagBits::eFragment )
-        .SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor} )
+        .SetDynamicStates( dynamicStates )
         .SetInputAssembly( vk::PrimitiveTopology::eTriangleList )
         .SetPolygonMode( vk::PolygonMode::eFill )
         .SetCulling( vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise )

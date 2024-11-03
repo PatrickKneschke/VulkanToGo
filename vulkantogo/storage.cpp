@@ -26,7 +26,7 @@ namespace vktg
     }
 
 
-    void ResizeBuffer(Buffer &buffer, size_t newSize) {
+    void ResizeBuffer( Buffer &buffer, size_t newSize) {
 
         DestroyBuffer( buffer);
         buffer.bufferInfo.setSize( newSize );
@@ -34,7 +34,7 @@ namespace vktg
     }
 
 
-    void DestroyBuffer(const Buffer &buffer) {
+    void DestroyBuffer( const Buffer &buffer) {
 
         if (!buffer.buffer)
         {
@@ -45,7 +45,7 @@ namespace vktg
     }
 
 
-    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, void *data) {
+    void CreateStagingBuffer( Buffer &buffer, size_t bufferSize, const void *data) {
 
         CreateBuffer(
             buffer,
@@ -100,7 +100,7 @@ namespace vktg
     }
 
     
-    void ResizeImage(Image &image, uint32_t newWidth, uint32_t newHeight) {
+    void ResizeImage( Image &image, uint32_t newWidth, uint32_t newHeight) {
 
         DestroyImage( image);
         image.imageInfo.setExtent( vk::Extent3D{newWidth, newHeight, 1} );
@@ -112,7 +112,7 @@ namespace vktg
     }
 
 
-    void DestroyImage(const Image &image) {
+    void DestroyImage( const Image &image) {
 
         DestroyImageView( image.imageView);
 
@@ -143,7 +143,7 @@ namespace vktg
     }
 
 
-    void DestroyImageView(vk::ImageView imageView) {
+    void DestroyImageView( vk::ImageView imageView) {
 
         if (!imageView)
         {

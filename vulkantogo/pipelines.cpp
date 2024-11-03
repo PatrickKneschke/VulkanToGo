@@ -43,7 +43,7 @@ namespace vktg
     }
 
     
-    ComputePipelineBuilder& ComputePipelineBuilder::SetShader( vk::ShaderModule shaderModule, vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
+    ComputePipelineBuilder& ComputePipelineBuilder::SetShader( vk::ShaderModule shaderModule, const vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
 
         shaderInfo
             .setModule( shaderModule )
@@ -62,7 +62,7 @@ namespace vktg
     }
 
     
-    ComputePipelineBuilder& ComputePipelineBuilder::AddPushConstant( vk::PushConstantRange pushConstant) {
+    ComputePipelineBuilder& ComputePipelineBuilder::AddPushConstant( const vk::PushConstantRange &pushConstant) {
     
         pushConstants.push_back( pushConstant);
 
@@ -152,7 +152,7 @@ namespace vktg
     }
 
     
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, const vk::SpecializationInfo *pSpecialization, std::string_view entryPointName) {
 
         shaderInfos.emplace_back( 
             vk::PipelineShaderStageCreateInfo{}
@@ -201,7 +201,7 @@ namespace vktg
     }
 
 
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddPushConstant( vk::PushConstantRange pushConst) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::AddPushConstant( const vk::PushConstantRange &pushConst) {
     
         pushConstants.push_back( pushConst);
 
@@ -228,7 +228,7 @@ namespace vktg
         return *this;
     }
 
-    GraphicsPipelineBuilder &GraphicsPipelineBuilder::SetVertexInputBindng( vk::VertexInputBindingDescription binding) {
+    GraphicsPipelineBuilder &GraphicsPipelineBuilder::SetVertexInputBindng( const vk::VertexInputBindingDescription &binding) {
 
         vertexInputBinding = binding;
 
@@ -346,7 +346,7 @@ namespace vktg
     }
 
 
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::EnableStencil( bool enable, vk::StencilOpState front, vk::StencilOpState back) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::EnableStencil( bool enable, const vk::StencilOpState &front, const vk::StencilOpState &back) {
     
         depthStencilInfo
             .setStencilTestEnable( enable )
@@ -372,7 +372,7 @@ namespace vktg
     }
 
 
-    GraphicsPipelineBuilder& GraphicsPipelineBuilder::SetDynamicStates( std::initializer_list<vk::DynamicState> dynStates) {
+    GraphicsPipelineBuilder& GraphicsPipelineBuilder::SetDynamicStates( std::span<vk::DynamicState> dynStates) {
     
         dynamicStates = std::vector<vk::DynamicState>( dynStates.begin(), dynStates.end());
 

@@ -57,7 +57,7 @@ namespace vktg
         /// @param pSpecialization Optional shader specialization constants.
         /// @param entryPointName Optional name of shader entry point function.
         /// @return Reference to ComputePipelineBuilder for chaining.
-        ComputePipelineBuilder& SetShader( vk::ShaderModule shaderModule, vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
+        ComputePipelineBuilder& SetShader( vk::ShaderModule shaderModule,  const vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
         /// @brief Add descriptor set layout to pipeline.
         /// @param descriptorLayout Descriptor set layout.
         /// @return Reference to ComputePipelineBuilder for chaining.
@@ -65,7 +65,7 @@ namespace vktg
         /// @brief Add push constant to pipeline.
         /// @param pushConstant Push constant range.
         /// @return Reference to ComputePipelineBuilder for chaining.
-        ComputePipelineBuilder& AddPushConstant( vk::PushConstantRange pushConstant);
+        ComputePipelineBuilder& AddPushConstant( const vk::PushConstantRange &pushConstant);
     };
 
 
@@ -102,7 +102,7 @@ namespace vktg
         /// @param pSpecialization Optional shader specialization constants.
         /// @param entryPointName Optional of shader entry function name.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
-        GraphicsPipelineBuilder& AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
+        GraphicsPipelineBuilder& AddShader( vk::ShaderModule shaderModule, vk::ShaderStageFlagBits shaderStage, const vk::SpecializationInfo *pSpecialization = nullptr, std::string_view entryPointName = "main");
         /// @brief Removes all shader modules from pipeline builder.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
         GraphicsPipelineBuilder& ClearShaders();
@@ -120,7 +120,7 @@ namespace vktg
         /// @brief Adds single push constant range used in pipeline
         /// @param pushConstant Push constant range.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
-        GraphicsPipelineBuilder& AddPushConstant( vk::PushConstantRange pushConst);
+        GraphicsPipelineBuilder& AddPushConstant( const vk::PushConstantRange &pushConst);
         /// @brief Adds multiple push constant ranges used in pipeline
         /// @param pushConstant List of push constant ranges.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
@@ -132,7 +132,7 @@ namespace vktg
         /// @brief Specify vertex input bindings.
         /// @param binding Vertex inout binding description
         /// @return Reference to GraphicsPipelineBuilder for chaining.
-        GraphicsPipelineBuilder& SetVertexInputBindng( vk::VertexInputBindingDescription binding);
+        GraphicsPipelineBuilder& SetVertexInputBindng( const vk::VertexInputBindingDescription &binding);
         /// @brief Specify vertex attributes.
         /// @param attributes List of vertex attribute descriptions.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
@@ -199,7 +199,7 @@ namespace vktg
         /// @param front Front stencil state.
         /// @param back Back stencil state.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
-        GraphicsPipelineBuilder& EnableStencil( bool enable, vk::StencilOpState front = vk::StencilOpState{}, vk::StencilOpState back = vk::StencilOpState{});
+        GraphicsPipelineBuilder& EnableStencil( bool enable, const vk::StencilOpState &front = vk::StencilOpState{}, const vk::StencilOpState &back = vk::StencilOpState{});
 
         /// @brief Specify blending settings.
         /// @param enable Enable/Disable blending.
@@ -212,7 +212,7 @@ namespace vktg
         /// @brief Specify pipeline dynamic states used in pipeline.
         /// @param dynStates List of dynamic states.
         /// @return Reference to GraphicsPipelineBuilder for chaining.
-        GraphicsPipelineBuilder& SetDynamicStates( std::initializer_list<vk::DynamicState> dynStates);
+        GraphicsPipelineBuilder& SetDynamicStates( std::span<vk::DynamicState> dynStates);
 
         /// @brief Specify formats for color attachments used in dynamic rendering.
         /// @param formats List of color attachment formats. 
@@ -232,11 +232,11 @@ namespace vktg
     /// @brief Creates Vulkan compute pipeline from pipeline create info.
     /// @param pipelineInfo Pipeline create info,
     /// @return Vulkan pipeline.
-    vk::Pipeline CreateComputePipeline( vk::ComputePipelineCreateInfo &pipelineInfo);
+    vk::Pipeline CreateComputePipeline( const vk::ComputePipelineCreateInfo &pipelineInfo);
     /// @brief Creates Vulkan graphics pipeline from pipeline create info.
     /// @param pipelineInfo Pipeline create info,
     /// @return Vulkan pipeline.
-    vk::Pipeline CreateGraphicsPipeline( vk::GraphicsPipelineCreateInfo &pipelineInfo);
+    vk::Pipeline CreateGraphicsPipeline( const vk::GraphicsPipelineCreateInfo &pipelineInfo);
 
     /// @brief Destroys given pipeline.
     /// @param pipeline Pipeline to destroy.
@@ -256,7 +256,7 @@ namespace vktg
     /// @brief Loads shader code from given path and creates a new Vulkan shader module.
     /// @param shaderPath Path to shader file.
     /// @return Vulkan shader module.
-    vk::ShaderModule LoadShader(std::string_view shaderPath);
+    vk::ShaderModule LoadShader( std::string_view shaderPath);
 
 	/// @brief Create Vulkan shader module from given byte code.
 	/// @param codeSize Byte code size in bytes.

@@ -38,7 +38,7 @@ namespace vktg
     }
 
     
-    void CopyImage( vk::CommandBuffer cmd, vk::Image srcImage, vk::Image dstImage, vk::Rect2D srcRegion, vk::Rect2D dstRegion, vk::Filter filter, vk::ImageSubresourceLayers srcSubresourse, vk::ImageSubresourceLayers dstSubresourse) {
+    void CopyImage( vk::CommandBuffer cmd, vk::Image srcImage, vk::Image dstImage, const vk::Rect2D &srcRegion, const vk::Rect2D &dstRegion, vk::Filter filter, const vk::ImageSubresourceLayers &srcSubresourse, const vk::ImageSubresourceLayers &dstSubresourse) {
 
         auto blitRegion = vk::ImageBlit2{}
             .setSrcOffsets( {vk::Offset3D{srcRegion.offset.x, srcRegion.offset.y, 0}, vk::Offset3D{(int)srcRegion.extent.width, (int)srcRegion.extent.height, 1}} )
@@ -59,7 +59,7 @@ namespace vktg
     }
 
     
-    void CopyBufferToImage( vk::CommandBuffer cmd, vk::Buffer srcBuffer, vk::Image dstImage, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+    void CopyBufferToImage( vk::CommandBuffer cmd, vk::Buffer srcBuffer, vk::Image dstImage, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, const vk::Offset3D &imgOffset, const vk::ImageSubresourceLayers &imgSubresource) {
 
         auto copyRegion = vk::BufferImageCopy2{}
             .setBufferOffset( bufferOffset )
@@ -78,7 +78,7 @@ namespace vktg
     }
 
 
-    void CopyImageToBuffer( vk::CommandBuffer cmd, vk::Image srcImage, vk::Buffer dstBuffer, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+    void CopyImageToBuffer( vk::CommandBuffer cmd, vk::Image srcImage, vk::Buffer dstBuffer, size_t bufferOffset, uint32_t imgWidth, uint32_t imgHeight, vk::Offset3D imgOffset, const vk::ImageSubresourceLayers &imgSubresource) {
 
         auto copyRegion = vk::BufferImageCopy2{}
             .setBufferOffset( bufferOffset)
@@ -96,7 +96,7 @@ namespace vktg
     }
 
 
-    void UploadBufferData(void *srcData, vk::Buffer dstBuffer, size_t size, size_t offset) {
+    void UploadBufferData( const void *srcData, vk::Buffer dstBuffer, size_t size, size_t offset) {
 
         Buffer stagingBuffer;
         CreateStagingBuffer( stagingBuffer, size, srcData);
@@ -117,7 +117,7 @@ namespace vktg
     }
 
 
-    void UploadImageData(void *srcData, vk::Image dstImage, uint32_t width, uint32_t height, vk::Offset3D imgOffset, vk::ImageSubresourceLayers imgSubresource) {
+    void UploadImageData( const void *srcData, vk::Image dstImage, uint32_t width, uint32_t height, const vk::Offset3D &imgOffset, const vk::ImageSubresourceLayers &imgSubresource) {
 
         Buffer stagingBuffer;
         CreateStagingBuffer( stagingBuffer, width * height * 4, srcData);
