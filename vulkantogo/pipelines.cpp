@@ -411,7 +411,7 @@ namespace vktg
     /***    UTILITIES    ***/
 
 
-    vk::Pipeline CreateComputePipeline(vk::ComputePipelineCreateInfo &pipelineInfo) {
+    vk::Pipeline CreateComputePipeline( const vk::ComputePipelineCreateInfo &pipelineInfo) {
 
         vk::Pipeline pipeline;
         VK_CHECK( Device().createComputePipelines( nullptr, 1, &pipelineInfo, nullptr, &pipeline) );
@@ -420,7 +420,7 @@ namespace vktg
     }
 
 
-    vk::Pipeline CreateGraphicsPipeline(vk::GraphicsPipelineCreateInfo &pipelineInfo) {
+    vk::Pipeline CreateGraphicsPipeline( const vk::GraphicsPipelineCreateInfo &pipelineInfo) {
 
         vk::Pipeline pipeline;
         VK_CHECK( Device().createGraphicsPipelines( nullptr, 1, &pipelineInfo, nullptr, &pipeline) );

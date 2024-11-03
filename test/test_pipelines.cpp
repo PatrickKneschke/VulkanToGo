@@ -117,7 +117,8 @@ TEST_CASE( "add shaders to graphics pipeline bulder", "[pipelines]") {
 TEST_CASE( "set graphics pipeline builder dynamic states", "[pipelines]") {
 
     vktg::GraphicsPipelineBuilder builder;
-    builder.SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor});
+    std::vector<vk::DynamicState> dynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
+    builder.SetDynamicStates( dynamicStates );
 
     REQUIRE( builder.dynamicStates.size() == 2 );
     REQUIRE( builder.dynamicStates[0] == vk::DynamicState::eViewport );
@@ -329,7 +330,7 @@ TEST_CASE( "create graphics pipeline", "[pipelines]") {
     vk::ShaderModule vertShader = vktg::LoadShader( "../res/shaders/test_vert.spv");
     vk::ShaderModule fragShader = vktg::LoadShader( "../res/shaders/test_frag.spv");
     std::vector<vk::Format> colorAttachmentFormats = {vk::Format::eR16G16B16A16Sfloat};
-
+    std::vector<vk::DynamicState> dynamicStates = {vk::DynamicState::eViewport, vk::DynamicState::eScissor};
     vktg::Pipeline pipeline = builder
         .AddShader( vertShader, vk::ShaderStageFlagBits::eVertex, nullptr, "main")
         .AddShader( fragShader, vk::ShaderStageFlagBits::eFragment, nullptr, "main")    
@@ -338,7 +339,7 @@ TEST_CASE( "create graphics pipeline", "[pipelines]") {
         .SetCulling( vk::CullModeFlagBits::eBack, vk::FrontFace::eCounterClockwise )
         .EnableDepth( true, true, vk::CompareOp::eLess )
         .EnableBlending( true )
-        .SetDynamicStates( {vk::DynamicState::eViewport, vk::DynamicState::eScissor} )
+        .SetDynamicStates( dynamicStates )
         .SetDepthFormat( vk::Format::eD32Sfloat )
         .SetColorFormats( colorAttachmentFormats )
         .Build();
